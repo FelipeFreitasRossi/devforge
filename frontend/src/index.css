@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@theme {
+  /* ============ BRAND — Âmbar da forja ============ */
+  --color-brand-50: #fffbeb;
+  --color-brand-100: #fef3c7;
+  --color-brand-200: #fde68a;
+  --color-brand-300: #fcd34d;
+  --color-brand-400: #fbbf24;
+  --color-brand-500: #f59e0b;
+  --color-brand-600: #d97706;
+  --color-brand-700: #b45309;
+  --color-brand-800: #92400e;
+  --color-brand-900: #78350f;
+
+  /* ============ ACCENT — Azul-aço ============ */
+  --color-accent-50: #eff6ff;
+  --color-accent-100: #dbeafe;
+  --color-accent-300: #93c5fd;
+  --color-accent-500: #3b82f6;
+  --color-accent-600: #2563eb;
+  --color-accent-700: #1d4ed8;
+  --color-accent-900: #1e3a8a;
+
+  /* ============ SUPERFÍCIES ============ */
+  --color-surface: #0a0a0b;
+  --color-surface-elevated: #18181b;
+  --color-surface-overlay: #27272a;
+
+  /* ============ BORDAS ============ */
+  --color-border: #27272a;
+  --color-border-strong: #3f3f46;
+
+  /* ============ TEXTO ============ */
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
+
+  /* ============ ESTADOS ============ */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+
+  /* ============ TIPOGRAFIA FLUIDA ============ */
+  --text-fluid-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --text-fluid-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --text-fluid-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  --text-fluid-xl: clamp(1.25rem, 1rem + 1.25vw, 1.5rem);
+  --text-fluid-2xl: clamp(1.5rem, 1.1rem + 2vw, 2rem);
+  --text-fluid-3xl: clamp(1.875rem, 1.2rem + 3.375vw, 2.5rem);
+  --text-fluid-4xl: clamp(2.25rem, 1rem + 6.25vw, 3.5rem);
+  --text-fluid-5xl: clamp(2.75rem, 1rem + 8.75vw, 4.5rem);
+
+  /* ============ ESPAÇAMENTO FLUIDO ============ */
+  --spacing-fluid-sm: clamp(0.5rem, 0.4rem + 0.5vw, 1rem);
+  --spacing-fluid-md: clamp(1rem, 0.75rem + 1.25vw, 2rem);
+  --spacing-fluid-lg: clamp(1.5rem, 1rem + 2.5vw, 3rem);
+  --spacing-fluid-xl: clamp(2rem, 1.25rem + 3.75vw, 4rem);
+  --spacing-fluid-section: clamp(4rem, 2rem + 10vw, 8rem);
+
+  /* ============ SOMBRAS ============ */
+  --shadow-glow: 0 0 40px -10px rgba(245, 158, 11, 0.4);
+  --shadow-card: 0 4px 24px -8px rgba(0, 0, 0, 0.6);
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar customizada */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-700);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Offset para âncoras não ficarem atrás do header fixo */
+section {
+  scroll-margin-top: 5rem;
+}
+
+@media (min-width: 768px) {
+  section {
+    scroll-margin-top: 6rem;
+  }
+}
+
+/* Respeita quem prefere menos animação */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
