@@ -1,9 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import database
-from app.routes import router
+from app.routes import auth, payments, webhooks
 
-app = FastAPI(title="Curso SaaS API")
+app = FastAPI(title="Devstack API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -13,8 +12,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router, prefix="/api")
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(payments.router, prefix="/api/payments", tags=["payments"])
+app.include_router(webhooks.router, prefix="/api/webhooks", tags=["webhooks"])
 
-@app.get("/health")
-async def health():
-    return {"status": "ok"}
+@app.get("/")
+async def root():
+    return {"message": "Devstack API rodando"}
