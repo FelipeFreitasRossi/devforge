@@ -7,7 +7,7 @@ const benefits = [
   'Novos conteúdos sem custo adicional',
   'Comunidade exclusiva de alunos',
   'Projetos práticos com código-fonte',
-  'Certificado de conclusão',
+  'Exercícios com soluções comentadas',
   'Suporte direto com instrutores',
   'Atualizações para sempre',
   'Garantia de 7 dias',
@@ -21,9 +21,9 @@ export function Pricing() {
 
   return (
     <section
+      id="pricing"
       ref={containerRef}
-      // Depois — respiro controlado
-    className="px-4 sm:px-6 lg:px-8 py-16 md:py-20"
+      className="px-4 sm:px-6 lg:px-8 py-fluid-section"
     >
       <div className="max-w-4xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
@@ -49,7 +49,6 @@ export function Pricing() {
           data-animate
           className="relative rounded-2xl border-2 border-brand-500/50 bg-surface-elevated p-6 sm:p-8 md:p-12 shadow-glow overflow-hidden"
         >
-          {/* Glow de fundo */}
           <div
             aria-hidden
             className="absolute inset-0 -z-10 opacity-30"
@@ -59,27 +58,29 @@ export function Pricing() {
             }}
           />
 
-          {/* Badge destaque */}
           <div className="absolute top-4 right-4 md:top-6 md:right-6 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500 text-surface text-xs font-bold">
             <Sparkles size={12} />
-            MAIS POPULAR
+            ACESSO VITALÍCIO
           </div>
 
           <div className="text-center mb-8 md:mb-10">
             <h3 className="text-fluid-2xl font-bold text-text-primary mb-2">
-              Plano Vitalício
+              Acesso Completo
             </h3>
             <p className="text-text-secondary mb-6 md:mb-8 text-sm md:text-base">
-              Tudo incluído, sem limites
+              Pagamento único, sem renovação
             </p>
 
             <div className="flex items-end justify-center gap-2 mb-2">
+              <span className="text-sm md:text-base text-text-secondary mb-3 md:mb-4">
+                R$
+              </span>
               <span className="text-fluid-5xl font-bold text-brand-500 leading-none">
-                R$ 497
+                19,99
               </span>
             </div>
             <p className="text-xs md:text-sm text-text-muted">
-              ou 12x de R$ 49,70 no cartão
+              pagamento único · sem mensalidade
             </p>
           </div>
 
@@ -98,7 +99,7 @@ export function Pricing() {
           </ul>
 
           <Button size="lg" className="w-full">
-            Garantir meu acesso vitalício
+            Garantir meu acesso por R$19,99
           </Button>
 
           <p className="text-center text-xs text-text-muted mt-4 md:mt-5">

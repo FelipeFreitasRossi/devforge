@@ -6,7 +6,7 @@ const faqs = [
   {
     question: 'O acesso é realmente vitalício?',
     answer:
-      'Sim. Você paga uma única vez e tem acesso a todo o conteúdo atual e a todas as atualizações futuras, sem pagar nada a mais.',
+      'Sim. Você paga R$19,99 uma única vez e tem acesso a todo o conteúdo atual e a todas as atualizações futuras, sem pagar nada a mais.',
   },
   {
     question: 'Preciso ter experiência prévia?',
@@ -14,19 +14,19 @@ const faqs = [
       'Não. A trilha começa do absoluto zero, cobrindo lógica, algoritmos e fundamentos antes de avançar para frameworks e projetos complexos.',
   },
   {
-    question: 'Quanto tempo tenho para concluir?',
+    question: 'Como funciona o formato do curso?',
     answer:
-      'No seu ritmo. Como o acesso é vitalício, você pode estudar no tempo que tiver disponível, sem pressa e sem prazo de expiração.',
+      'Cada lição combina explicação escrita direta com código executável que você copia, cola e roda. Ao fim de cada módulo há exercícios práticos com soluções comentadas para você comparar sua abordagem.',
   },
   {
     question: 'Quais tecnologias vou aprender?',
     answer:
-      'Python, JavaScript, TypeScript, React, FastAPI, MongoDB, Git, Docker, deploy e muito mais — tudo aplicado em projetos reais.',
+      'Python, JavaScript, TypeScript, React, FastAPI, MongoDB, Git, deploy e muito mais — tudo aplicado em projetos reais e exercícios práticos.',
   },
   {
-    question: 'Recebo certificado?',
+    question: 'Quanto tempo tenho para concluir?',
     answer:
-      'Sim. Ao concluir cada módulo você desbloqueia o certificado correspondente, e ao final da trilha recebe o certificado completo.',
+      'No seu ritmo. Como o acesso é vitalício, você pode estudar no tempo que tiver disponível, sem pressa e sem prazo de expiração.',
   },
   {
     question: 'E se eu não gostar?',

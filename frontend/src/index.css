@@ -113,3 +113,9 @@ section {
     transition-duration: 0.01ms !important;
   }
 }
+
+@theme {
+  --color-danger: #ef4444;
+  --color-surface-overlay: #27272a;
+  --color-text-muted: #71717a;
+}

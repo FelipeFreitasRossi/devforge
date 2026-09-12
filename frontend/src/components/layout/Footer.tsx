@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-const LOGO_URL = 'https://i.postimg.cc/0N6ThCRg/Logo-tecnologica-Dev-Forge.png';
+const LOGO_URL = 'https://i.postimg.cc/X7RLxfVm/3.png';
 
 export function Footer() {
   return (
@@ -9,14 +9,17 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-10 mb-8 md:mb-12">
           {/* Marca */}
           <div className="md:col-span-2">
-            <Link to="/" className="flex items-center gap-2.5 md:gap-3 mb-4 md:mb-5">
+            <Link
+              to="/"
+              className="flex items-center gap-2.5 md:gap-3 mb-4 md:mb-5"
+            >
               <img
                 src={LOGO_URL}
-                alt="DevForge"
+                alt="Devstack"
                 className="h-8 md:h-9 w-auto object-contain"
               />
               <span className="text-lg md:text-xl font-bold text-text-primary">
-                Dev<span className="text-brand-500">Forge</span>
+                Dev<span className="text-brand-500">stack</span>
               </span>
             </Link>
             <p className="text-text-secondary text-sm max-w-sm leading-relaxed">
@@ -94,7 +97,7 @@ export function Footer() {
 
         <div className="pt-6 md:pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-3 md:gap-4">
           <p className="text-sm text-text-muted">
-            © {new Date().getFullYear()} DevForge. Todos os direitos reservados.
+            © {new Date().getFullYear()} Devstack. Todos os direitos reservados.
           </p>
           <p className="text-sm text-text-muted">
             Feito com dedicação para devs de verdade.

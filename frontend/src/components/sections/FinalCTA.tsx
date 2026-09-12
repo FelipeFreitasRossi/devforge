@@ -33,7 +33,7 @@ export function FinalCTA() {
           className="text-fluid-base md:text-fluid-lg text-text-secondary max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed"
         >
           Junte-se a milhares de alunos que transformaram a carreira com a
-          DevForge. Pague uma vez, aprenda para sempre.
+          Devstack. Pague uma vez, aprenda para sempre.
         </p>
 
         <div

@@ -3,7 +3,6 @@ import {
   Rocket,
   Users,
   Infinity as InfinityIcon,
-  Trophy,
   BookOpen,
   Check,
   ArrowRight,
@@ -57,9 +56,9 @@ const secondaryFeatures = [
     accent: 'accent',
   },
   {
-    icon: Trophy,
-    title: 'Certificado válido',
-    description: 'Comprove suas habilidades no currículo e no LinkedIn.',
+    icon: Target,
+    title: 'Prática desde o dia 1',
+    description: 'Você escreve código real desde a primeira lição.',
     accent: 'brand',
   },
   {
@@ -132,7 +131,7 @@ export function Features() {
             className="inline-flex items-center gap-2 text-xs md:text-sm font-semibold text-brand-500 uppercase tracking-wider mb-4"
           >
             <span className="w-8 h-px bg-brand-500" />
-            Por que a DevForge
+            Por que a Devstack
           </span>
 
           <h2
@@ -150,7 +149,7 @@ export function Features() {
             data-animate
             className="text-fluid-base text-text-secondary leading-relaxed max-w-2xl"
           >
-            A maioria dos cursos te ensina a copiar código. A DevForge te
+            A maioria dos cursos te ensina a copiar código. A Devstack te
             ensina a{' '}
             <strong className="text-text-primary font-semibold">
               pensar como dev
@@ -394,7 +393,7 @@ export function Features() {
             {/* Coluna: DevForge */}
             <div className="p-6 md:p-10">
               <span className="text-xs font-semibold text-brand-500 uppercase tracking-wider">
-                DevForge
+                Devstack
               </span>
               <h3 className="text-fluid-xl font-bold text-text-primary mt-3 mb-6">
                 O que você tem aqui
