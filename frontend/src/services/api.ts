@@ -23,10 +23,8 @@ async function request<T>(
     headers,
   });
 
-  // Tratamento de 401: token inválido/expirado
   if (response.status === 401) {
     localStorage.removeItem('token');
-    // Redireciona apenas se não estiver já em /login
     if (!window.location.pathname.startsWith('/login')) {
       window.location.href = '/login';
     }
@@ -42,6 +40,7 @@ async function request<T>(
   return data;
 }
 
+// ============ AUTH + PAYMENTS ============
 export const api = {
   register: (name: string, email: string, password: string) =>
     request('/auth/register', {
@@ -57,7 +56,7 @@ export const api = {
 
   me: () => request('/auth/me'),
 
-  createPayment: (method: 'pix' | 'boleto' | 'credit_card') =>
+  createPayment: (method: 'pix' | 'credit_card') =>
     request('/payments/create', {
       method: 'POST',
       body: JSON.stringify({ method }),
@@ -75,4 +74,71 @@ export const api = {
 
   checkPaymentStatus: (orderId: string) =>
     request(`/payments/status/${orderId}`),
+};
+
+// ============ DASHBOARD TYPES ============
+export interface DashboardOverview {
+  user: { name: string; email: string };
+  stats: {
+    active_modules: number;
+    completed_modules: number;
+    study_hours: number;
+    weekly_goal_progress: string;
+  };
+  streak: {
+    current_days: number;
+    longest_days: number;
+    last_study_date: string | null;
+  };
+  next_lesson: {
+    module_id: string;
+    module_title: string;
+    lesson_id: string;
+    lesson_title: string;
+    duration_minutes: number;
+    progress_percent: number;
+  } | null;
+}
+
+export interface DashboardModule {
+  id: string;
+  title: string;
+  description: string;
+  lessons_count: number;
+  completed_lessons: number;
+  status: 'completed' | 'in_progress' | 'locked';
+  duration_hours: number;
+  progress_percent: number;
+}
+
+export interface DashboardAchievement {
+  id: string;
+  title: string;
+  description: string;
+  accent: 'brand' | 'accent';
+  unlocked: boolean;
+}
+
+// ============ DASHBOARD API ============
+export const dashboardApi = {
+  getOverview: () => request<DashboardOverview>('/dashboard/overview'),
+  getModules: () =>
+    request<{ modules: DashboardModule[] }>('/dashboard/modules'),
+  getAchievements: () =>
+    request<{ achievements: DashboardAchievement[] }>(
+      '/dashboard/achievements'
+    ),
+  postProgress: (data: {
+    module_id: string;
+    lesson_id: string;
+    time_spent_minutes: number;
+    completed: boolean;
+  }) =>
+    request<{ success: boolean; new_achievements: string[] }>(
+      '/dashboard/progress',
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }
+    ),
 };

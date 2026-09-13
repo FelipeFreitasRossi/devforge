@@ -5,7 +5,7 @@ import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { Cadastro } from './pages/Cadastro';
 import { Checkout } from './pages/Checkout';
-import { Dashboard } from './pages/Dashboard';
+import { StudentArea } from './pages/StudentArea';
 
 function App() {
   return (
@@ -22,7 +22,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/minha-area" element={<StudentArea />} />
       </Routes>
     </AuthProvider>
   );
