@@ -9,19 +9,18 @@ import {
   Menu,
   X,
   CheckCircle2,
+  AlertCircle,
 } from 'lucide-react';
 import { StudentHeader } from '../components/student/StudentHeader';
 import { LessonSidebar } from '../components/lesson/LessonSidebar';
 import { LessonContent } from '../components/lesson/LessonContent';
-import { ExercisesBlock } from '../components/lesson/ExercisesBlock';
+import { ExerciseBlock } from '../components/lesson/ExerciseBlock';
 import { useLesson } from '../hooks/useLesson';
 import { useAuth } from '../contexts/AuthContext';
+import { getDisplayNumberPadded } from '../utils/lessonNumbers';
 
 export function LessonPage() {
-  const { lessonId } = useParams<{
-    moduleId: string;
-    lessonId: string;
-  }>();
+  const { lessonId } = useParams<{ moduleId: string; lessonId: string }>();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -59,13 +58,16 @@ export function LessonPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface px-4">
         <div className="text-center max-w-md">
+          <AlertCircle size={32} className="text-danger mx-auto mb-4" />
           <p className="text-danger text-sm font-medium mb-2">
             Erro ao carregar lição
           </p>
-          <p className="text-text-muted text-xs">{error}</p>
+          <p className="text-text-muted text-xs mb-4">
+            {error ?? 'Lição não disponível'}
+          </p>
           <Link
             to="/minha-area"
-            className="inline-block mt-4 text-brand-500 hover:text-brand-400 text-sm font-medium"
+            className="inline-block text-brand-500 hover:text-brand-400 text-sm font-medium"
           >
             ← Voltar para a área do aluno
           </Link>
@@ -82,6 +84,8 @@ export function LessonPage() {
     next_lesson_id,
     sidebar,
   } = data;
+
+  const topics = lesson.topics ?? [];
 
   return (
     <div className="min-h-screen bg-surface">
@@ -128,7 +132,7 @@ export function LessonPage() {
             <div className="mb-8">
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 <span className="inline-flex items-center gap-1.5 text-xs font-mono text-text-muted bg-surface-elevated px-3 py-1 rounded-full border border-border">
-                  {lesson.id}
+                  {lesson.module_id}-{getDisplayNumberPadded(lesson.id)}
                 </span>
                 <span className="inline-flex items-center gap-1.5 text-xs text-text-muted">
                   <Clock size={12} />
@@ -167,23 +171,37 @@ export function LessonPage() {
               </div>
             </div>
 
-            <article className="mb-10">
-              <LessonContent blocks={lesson.content} />
-            </article>
+            {topics.map((topic, topicIndex) => (
+              <div key={topic.id} className="mb-14">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="shrink-0 w-8 h-8 rounded-lg bg-brand-500/15 border border-brand-500/40 flex items-center justify-center text-sm font-bold text-brand-500 font-mono">
+                    {topicIndex + 1}
+                  </span>
+                  <h2 className="text-xl md:text-2xl font-bold text-text-primary tracking-tight">
+                    {topic.title}
+                  </h2>
+                </div>
 
-            {lesson.exercises && lesson.exercises.length > 0 && (
-              <div className="mb-10">
-                <ExercisesBlock
-                  exercises={lesson.exercises}
-                  codes={codes}
-                  onCodeChange={updateCode}
-                  onSubmit={submit}
-                  submitting={submitting}
-                  results={results}
-                  attempts={attempts}
-                />
+                <article className="mb-8">
+                  <LessonContent blocks={topic.content} />
+                </article>
+
+                {topic.exercise && (
+                  <ExerciseBlock
+                    exerciseNumber={topicIndex + 1}
+                    title={topic.exercise.title}
+                    statement={topic.exercise.statement}
+                    hint={topic.exercise.hint}
+                    code={codes[topic.exercise.id] ?? topic.exercise.starter_code}
+                    onCodeChange={(code) => updateCode(topic.exercise!.id, code)}
+                    onSubmit={() => submit(topic.exercise!.id)}
+                    submitting={submitting === topic.exercise.id}
+                    result={results[topic.exercise.id] ?? null}
+                    attempts={attempts}
+                  />
+                )}
               </div>
-            )}
+            ))}
 
             <section className="mb-10 p-5 md:p-6 rounded-xl border border-border bg-surface-elevated">
               <h3 className="text-sm font-semibold text-text-primary uppercase tracking-wider mb-3">

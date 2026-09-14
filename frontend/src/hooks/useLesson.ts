@@ -11,13 +11,16 @@ function codeStorageKey(lessonId: string) {
 
 function loadCodes(
   lessonId: string,
-  exercises: { id: string; starter_code: string }[]
+  topics: { exercise: { id: string; starter_code: string } | null }[]
 ): Record<string, string> {
   const raw = localStorage.getItem(codeStorageKey(lessonId));
   const saved = raw ? JSON.parse(raw) : {};
   const codes: Record<string, string> = {};
-  for (const ex of exercises) {
-    codes[ex.id] = saved[ex.id] ?? ex.starter_code;
+  for (const topic of topics) {
+    if (topic.exercise) {
+      codes[topic.exercise.id] =
+        saved[topic.exercise.id] ?? topic.exercise.starter_code;
+    }
   }
   return codes;
 }
@@ -29,9 +32,7 @@ export function useLesson(lessonId: string | undefined) {
 
   const [codes, setCodes] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState<string | null>(null);
-  const [results, setResults] = useState<
-    Record<string, SubmitCodeResponse>
-  >({});
+  const [results, setResults] = useState<Record<string, SubmitCodeResponse>>({});
 
   const startedAtRef = useRef<number>(Date.now());
 
@@ -48,8 +49,13 @@ export function useLesson(lessonId: string | undefined) {
       .getLesson(lessonId)
       .then((response) => {
         if (cancelled) return;
+        if (!response || !response.lesson) {
+          setError('Resposta inválida do servidor.');
+          return;
+        }
         setData(response);
-        setCodes(loadCodes(lessonId, response.lesson.exercises));
+        const topics = response.lesson.topics ?? [];
+        setCodes(loadCodes(lessonId, topics));
       })
       .catch((err) => {
         if (!cancelled) setError(err.message ?? 'Erro ao carregar a lição');
@@ -68,10 +74,7 @@ export function useLesson(lessonId: string | undefined) {
       setCodes((prev) => {
         const next = { ...prev, [exerciseId]: value };
         if (lessonId) {
-          localStorage.setItem(
-            codeStorageKey(lessonId),
-            JSON.stringify(next)
-          );
+          localStorage.setItem(codeStorageKey(lessonId), JSON.stringify(next));
         }
         return next;
       });
@@ -105,7 +108,6 @@ export function useLesson(lessonId: string | undefined) {
         setResults((prev) => ({ ...prev, [exerciseId]: response }));
 
         if (response.success) {
-          // Remove só o código deste exercício
           setCodes((prev) => {
             const next = { ...prev };
             delete next[exerciseId];
@@ -136,14 +138,5 @@ export function useLesson(lessonId: string | undefined) {
     [lessonId, codes]
   );
 
-  return {
-    data,
-    loading,
-    error,
-    codes,
-    updateCode,
-    submit,
-    submitting,
-    results,
-  };
+  return { data, loading, error, codes, updateCode, submit, submitting, results };
 }

@@ -9,88 +9,60 @@ import type {
   TimelineEntry,
 } from '../services/api';
 
-interface DashboardState {
-  overview: DashboardOverview | null;
-  modules: DashboardModule[];
-  achievements: DashboardAchievement[];
-  weeklyActivity: WeeklyActivity[];
-  timeDistribution: ModuleTimeDistribution[];
-  timeline: TimelineEntry[];
-  loading: boolean;
-  error: string | null;
-}
-
-/**
- * Busca todos os dados da área do aluno de uma vez só.
- * Se algum endpoint novo (time-distribution / timeline) ainda não existir
- * no backend, ele simplesmente entra como lista vazia em vez de quebrar a tela.
- */
 export function useDashboard() {
-  const [state, setState] = useState<DashboardState>({
-    overview: null,
-    modules: [],
-    achievements: [],
-    weeklyActivity: [],
-    timeDistribution: [],
-    timeline: [],
-    loading: true,
-    error: null,
-  });
+  const [overview, setOverview] = useState<DashboardOverview | null>(null);
+  const [modules, setModules] = useState<DashboardModule[]>([]);
+  const [achievements, setAchievements] = useState<DashboardAchievement[]>([]);
+  const [weeklyActivity, setWeeklyActivity] = useState<WeeklyActivity[]>([]);
+  const [timeDistribution, setTimeDistribution] = useState<
+    ModuleTimeDistribution[]
+  >([]);
+  const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    let cancelado = false;
+    // `allSettled` aceita falhas parciais — se um endpoint falhar, os
+    // outros ainda carregam normalmente.
+    Promise.allSettled([
+      dashboardApi.getOverview(),
+      dashboardApi.getModules(),
+      dashboardApi.getAchievements(),
+      dashboardApi.getWeeklyActivity(),
+      dashboardApi.getTimeDistribution(),
+      dashboardApi.getTimeline(),
+    ])
+      .then(([ov, mods, achs, week, dist, tl]) => {
+        if (ov.status === 'fulfilled') setOverview(ov.value);
+        if (mods.status === 'fulfilled') setModules(mods.value.modules);
+        if (achs.status === 'fulfilled')
+          setAchievements(achs.value.achievements);
+        if (week.status === 'fulfilled')
+          setWeeklyActivity(week.value.activity);
+        if (dist.status === 'fulfilled')
+          setTimeDistribution(dist.value.distribution);
+        if (tl.status === 'fulfilled') setTimeline(tl.value.entries);
 
-    async function carregar() {
-      try {
-        const [overview, modulesRes, achievementsRes, activityRes] =
-          await Promise.all([
-            dashboardApi.getOverview(),
-            dashboardApi.getModules(),
-            dashboardApi.getAchievements(),
-            dashboardApi.getWeeklyActivity(),
-          ]);
-
-        // Endpoints novos: buscamos separado e toleramos falha,
-        // já que podem ainda não existir no backend.
-        const [timeDistribution, timeline] = await Promise.allSettled([
-          dashboardApi.getTimeDistribution(),
-          dashboardApi.getTimeline(),
-        ]);
-
-        if (cancelado) return;
-
-        setState({
-          overview,
-          modules: modulesRes.modules,
-          achievements: achievementsRes.achievements,
-          weeklyActivity: activityRes.activity,
-          timeDistribution:
-            timeDistribution.status === 'fulfilled'
-              ? timeDistribution.value.distribution
-              : [],
-          timeline:
-            timeline.status === 'fulfilled' ? timeline.value.entries : [],
-          loading: false,
-          error: null,
-        });
-      } catch (err) {
-        if (cancelado) return;
-        setState((prev) => ({
-          ...prev,
-          loading: false,
-          error:
-            err instanceof Error
-              ? err.message
-              : 'Não foi possível carregar seus dados',
-        }));
-      }
-    }
-
-    carregar();
-    return () => {
-      cancelado = true;
-    };
+        // Se o overview falhou, aí sim mostramos erro geral
+        if (ov.status === 'rejected') {
+          setError(
+            ov.reason instanceof Error
+              ? ov.reason.message
+              : 'Erro ao carregar dados'
+          );
+        }
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  return state;
+  return {
+    overview,
+    modules,
+    achievements,
+    weeklyActivity,
+    timeDistribution,
+    timeline,
+    loading,
+    error,
+  };
 }

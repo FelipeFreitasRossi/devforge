@@ -9,7 +9,11 @@ from app.database import (
     lesson_submissions_collection,
 )
 from app.analytics import get_lesson_sidebar, check_achievements
-from app.lessons import get_lesson, get_adjacent_lesson_ids, validate_submission
+from app.lessons_content import (
+    get_lesson,
+    get_adjacent_lesson_ids,
+    validate_submission,
+)
 from app.code_runner import run_student_code
 
 router = APIRouter(prefix="/api/lessons", tags=["lessons"])
@@ -22,19 +26,32 @@ class CodeSubmission(BaseModel):
 
 
 def _find_exercise(lesson: dict, exercise_id: str | None) -> dict:
-    """Encontra o exercício pelo id. Se não passar, pega o primeiro."""
-    exercises = lesson.get("exercises") or []
-    if not exercises:
-        if "exercise" in lesson:
-            return lesson["exercise"]
+    """Encontra o exercício no formato novo (topics) ou antigo (exercises)."""
+    # Formato novo: topics com exercise
+    topics = lesson.get("topics") or []
+    if topics:
+        if exercise_id is None:
+            # Pega o primeiro exercise dos topics
+            for topic in topics:
+                if topic.get("exercise"):
+                    return topic["exercise"]
+            raise HTTPException(status_code=404, detail="Exercício não encontrado")
+        for topic in topics:
+            ex = topic.get("exercise")
+            if ex and ex.get("id") == exercise_id:
+                return ex
         raise HTTPException(status_code=404, detail="Exercício não encontrado")
 
-    if exercise_id is None:
-        return exercises[0]
+    # Formato antigo: exercises como array
+    exercises = lesson.get("exercises") or []
+    if exercises:
+        if exercise_id is None:
+            return exercises[0]
+        for ex in exercises:
+            if ex.get("id") == exercise_id:
+                return ex
+        raise HTTPException(status_code=404, detail="Exercício não encontrado")
 
-    for ex in exercises:
-        if ex.get("id") == exercise_id:
-            return ex
     raise HTTPException(status_code=404, detail="Exercício não encontrado")
 
 

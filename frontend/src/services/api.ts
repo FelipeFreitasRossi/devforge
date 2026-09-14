@@ -31,13 +31,21 @@ async function request<T>(
     throw new Error('Sessão expirada. Faça login novamente.');
   }
 
-  const data = await response.json();
+  const rawText = await response.text();
 
-  if (!response.ok) {
-    throw new Error(data.detail || 'Erro na requisição');
+  let data: any = null;
+  try {
+    data = rawText ? JSON.parse(rawText) : null;
+  } catch {
+    console.error('Resposta não-JSON:', rawText.slice(0, 500));
+    throw new Error(`Erro ${response.status}: resposta inesperada do servidor.`);
   }
 
-  return data;
+  if (!response.ok) {
+    throw new Error(data?.detail || 'Erro na requisição');
+  }
+
+  return data as T;
 }
 
 export const api = {
@@ -75,7 +83,6 @@ export const api = {
     request(`/payments/status/${orderId}`),
 };
 
-// ============ DASHBOARD TYPES ============
 export interface DashboardOverview {
   user: { name: string; email: string };
   stats: {
@@ -145,9 +152,7 @@ export const dashboardApi = {
   getModules: () =>
     request<{ modules: DashboardModule[] }>('/dashboard/modules'),
   getAchievements: () =>
-    request<{ achievements: DashboardAchievement[] }>(
-      '/dashboard/achievements'
-    ),
+    request<{ achievements: DashboardAchievement[] }>('/dashboard/achievements'),
   getWeeklyActivity: () =>
     request<{ activity: WeeklyActivity[] }>('/dashboard/weekly-activity'),
   postProgress: (data: {
@@ -158,17 +163,13 @@ export const dashboardApi = {
   }) =>
     request<{ success: boolean; new_achievements: string[] }>(
       '/dashboard/progress',
-      {
-        method: 'POST',
-        body: JSON.stringify(data),
-      }
+      { method: 'POST', body: JSON.stringify(data) }
     ),
   getTimeDistribution: () =>
     request<{ distribution: ModuleTimeDistribution[] }>(
       '/dashboard/time-distribution'
     ),
-  getTimeline: () =>
-    request<{ entries: TimelineEntry[] }>('/dashboard/timeline'),
+  getTimeline: () => request<{ entries: TimelineEntry[] }>('/dashboard/timeline'),
 };
 
 // ============ LESSON TYPES ============
@@ -188,14 +189,20 @@ export interface LessonExercise {
   hint: string;
 }
 
+export interface LessonTopic {
+  id: string;
+  title: string;
+  content: LessonBlock[];
+  exercise: LessonExercise | null;
+}
+
 export interface Lesson {
   id: string;
   module_id: string;
   title: string;
   objectives: string[];
   reading_time_minutes: number;
-  content: LessonBlock[];
-  exercises: LessonExercise[];
+  topics: LessonTopic[];
   summary: string[];
 }
 

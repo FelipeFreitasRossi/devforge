@@ -9,6 +9,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import type { LessonSidebarModule } from '../../services/api';
+import { getDisplayNumberPadded } from '../../utils/lessonNumbers';
 
 interface LessonSidebarProps {
   sidebar: LessonSidebarModule[];
@@ -50,7 +51,12 @@ function LessonItem({
         )}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate">{lesson.title}</p>
+        <p className="truncate">
+          <span className="text-text-muted font-mono mr-1.5">
+            {getDisplayNumberPadded(lesson.id)}
+          </span>
+          {lesson.title}
+        </p>
         <span className="text-[10px] text-text-muted font-mono">
           {lesson.reading_time_minutes} min
         </span>

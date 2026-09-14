@@ -12,6 +12,8 @@ from app.analytics import (
     get_all_achievements,
     check_achievements,
     get_weekly_activity,
+    get_time_distribution,
+    get_timeline,
 )
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
@@ -61,6 +63,18 @@ async def get_achievements(user=Depends(get_current_user)):
 async def weekly_activity(user=Depends(get_current_user)):
     user_id = str(user["_id"])
     return {"activity": get_weekly_activity(user_id)}
+
+
+@router.get("/time-distribution")
+async def time_distribution(user=Depends(get_current_user)):
+    user_id = str(user["_id"])
+    return {"distribution": get_time_distribution(user_id)}
+
+
+@router.get("/timeline")
+async def timeline(user=Depends(get_current_user)):
+    user_id = str(user["_id"])
+    return {"entries": get_timeline(user_id)}
 
 
 @router.post("/progress")

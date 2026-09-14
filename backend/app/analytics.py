@@ -7,26 +7,25 @@ from app.database import (
 
 CURRICULUM = [
     {
-        "id": "01",
-        "title": "Lógica de Programação",
-        "description": "O básico antes de programar: pensar como um dev",
-        "duration_hours": 8,
-        "lessons": [
-            {"id": "01-01", "title": "O que é programar", "reading_time_minutes": 8, "has_exercise": False},
-            {"id": "01-02", "title": "Algoritmos no dia a dia", "reading_time_minutes": 10, "has_exercise": True},
-            {"id": "01-03", "title": "Variáveis e constantes", "reading_time_minutes": 12, "has_exercise": True},
-            {"id": "01-04", "title": "Tipos de dados", "reading_time_minutes": 12, "has_exercise": True},
-            {"id": "01-05", "title": "Operadores aritméticos", "reading_time_minutes": 10, "has_exercise": True},
-            {"id": "01-06", "title": "Operadores lógicos e relacionais", "reading_time_minutes": 12, "has_exercise": True},
-            {"id": "01-07", "title": "Estruturas condicionais (if/else)", "reading_time_minutes": 14, "has_exercise": True},
-            {"id": "01-08", "title": "Estruturas de repetição (for/while)", "reading_time_minutes": 15, "has_exercise": True},
-            {"id": "01-09", "title": "Listas", "reading_time_minutes": 12, "has_exercise": True},
-            {"id": "01-10", "title": "Dicionários", "reading_time_minutes": 12, "has_exercise": True},
-            {"id": "01-11", "title": "Funções", "reading_time_minutes": 14, "has_exercise": True},
-            {"id": "01-12", "title": "Projeto: Calculadora", "reading_time_minutes": 20, "has_exercise": True},
-        ],
+    "id": "01",
+    "title": "Lógica de Programação",
+    "description": "O básico antes de programar: pensar como um dev",
+    "duration_hours": 8,
+    "lessons": [
+        {"id": "01-01", "title": "Fundamentos da Programação", "reading_time_minutes": 29, "has_exercise": True},
+        {"id": "01-03", "title": "Variáveis e Constantes", "reading_time_minutes": 12, "has_exercise": True},
+        {"id": "01-04", "title": "Tipos de Dados", "reading_time_minutes": 12, "has_exercise": True},
+        {"id": "01-05", "title": "Operadores Aritméticos", "reading_time_minutes": 10, "has_exercise": True},
+        {"id": "01-06", "title": "Operadores Lógicos e Relacionais", "reading_time_minutes": 12, "has_exercise": True},
+        {"id": "01-07", "title": "Estruturas Condicionais (if/else)", "reading_time_minutes": 14, "has_exercise": True},
+        {"id": "01-08", "title": "Estruturas de Repetição (for/while)", "reading_time_minutes": 15, "has_exercise": True},
+        {"id": "01-09", "title": "Listas", "reading_time_minutes": 12, "has_exercise": True},
+        {"id": "01-10", "title": "Dicionários", "reading_time_minutes": 12, "has_exercise": True},
+        {"id": "01-11", "title": "Funções", "reading_time_minutes": 14, "has_exercise": True},
+        {"id": "01-12", "title": "Projeto: Calculadora", "reading_time_minutes": 20, "has_exercise": True},
+    ],
     },
-    {
+    {   
         "id": "02",
         "title": "Python Fundamentos",
         "description": "Sintaxe, entrada/saída e estruturas básicas",
@@ -234,7 +233,6 @@ def calculate_streak(user_id: str) -> dict:
     activities = list(
         daily_activity_collection.find({"user_id": user_id}).sort("date", -1)
     )
-
     if not activities:
         return {"current_days": 0, "longest_days": 0, "last_study_date": None}
 
@@ -437,6 +435,74 @@ def get_weekly_activity(user_id: str) -> list[dict]:
                 day.weekday()
             ],
             "minutes": activity["minutes_studied"] if activity else 0,
+        })
+
+    return result
+
+
+def get_time_distribution(user_id: str) -> list[dict]:
+    """Retorna o tempo total de estudo por módulo."""
+    pipeline = [
+        {"$match": {"user_id": user_id}},
+        {
+            "$group": {
+                "_id": "$module_id",
+                "minutes": {"$sum": "$time_spent_minutes"},
+            }
+        },
+    ]
+    result = list(progress_collection.aggregate(pipeline))
+    minutes_by_module = {r["_id"]: r["minutes"] for r in result}
+
+    distribution = []
+    for module in CURRICULUM:
+        minutes = minutes_by_module.get(module["id"], 0)
+        if minutes > 0:
+            distribution.append({
+                "module_id": module["id"],
+                "module_title": module["title"],
+                "minutes": minutes,
+            })
+
+    distribution.sort(key=lambda x: x["minutes"], reverse=True)
+    return distribution
+
+
+def get_timeline(user_id: str, limit: int = 10) -> list[dict]:
+    """Retorna as últimas aulas concluídas (mais recentes primeiro)."""
+    entries = list(
+        progress_collection.find({
+            "user_id": user_id,
+            "completed": True,
+        })
+        .sort("completed_at", -1)
+        .limit(limit)
+    )
+
+    lesson_lookup = {}
+    for module in CURRICULUM:
+        for lesson in module["lessons"]:
+            lesson_lookup[lesson["id"]] = {
+                "lesson_title": lesson["title"],
+                "module_title": module["title"],
+            }
+
+    result = []
+    for entry in entries:
+        lesson_id = entry["lesson_id"]
+        info = lesson_lookup.get(lesson_id, {})
+        completed_at = entry.get("completed_at")
+
+        result.append({
+            "id": str(entry["_id"]),
+            "lesson_id": lesson_id,
+            "lesson_title": info.get("lesson_title", "Lição"),
+            "module_title": info.get("module_title", ""),
+            "date": (
+                completed_at.isoformat()
+                if completed_at
+                else datetime.utcnow().isoformat()
+            ),
         })
 
     return result

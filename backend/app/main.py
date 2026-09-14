@@ -18,7 +18,7 @@ app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(payments.router, prefix="/api/payments", tags=["payments"])
 app.include_router(webhooks.router, prefix="/api/webhooks", tags=["webhooks"])
 app.include_router(dashboard.router)
-app.include_router(lessons_routes.router)
+app.include_router(lessons_routes.router)   
 
 
 @app.get("/")
