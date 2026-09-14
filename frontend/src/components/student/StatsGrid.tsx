@@ -1,79 +1,136 @@
-import { BookOpen, Trophy, Clock, Target } from 'lucide-react';
+import { BookOpen, Trophy, Clock, Target, TrendingUp } from 'lucide-react';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { useCountUp } from '../../hooks/useCountUp';
 import type { DashboardOverview } from '../../services/api';
 
 interface StatsGridProps {
   overview: DashboardOverview | null;
 }
 
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  suffix = '',
+  accent,
+  trend,
+}: {
+  icon: typeof BookOpen;
+  label: string;
+  value: number;
+  suffix?: string;
+  accent: 'brand' | 'accent';
+  trend?: string;
+}) {
+  const { value: animated, elementRef } = useCountUp(value);
+  const isBrand = accent === 'brand';
+
+  return (
+    <div
+      ref={elementRef as React.RefObject<HTMLDivElement>}
+      data-animate
+      className={`group relative p-5 md:p-6 rounded-2xl border bg-surface-elevated overflow-hidden transition-all duration-500 hover:-translate-y-1 ${
+        isBrand
+          ? 'border-brand-500/20 hover:border-brand-500/50'
+          : 'border-accent-500/20 hover:border-accent-500/50'
+      }`}
+    >
+      {/* Glow no hover */}
+      <div
+        aria-hidden
+        className="absolute -top-16 -right-16 w-40 h-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-3xl pointer-events-none"
+        style={{
+          background: isBrand
+            ? 'radial-gradient(circle, rgba(245, 158, 11, 0.35), transparent 70%)'
+            : 'radial-gradient(circle, rgba(59, 130, 246, 0.35), transparent 70%)',
+        }}
+      />
+
+      <div className="relative">
+        <div className="flex items-start justify-between mb-4">
+          <div
+            className={`w-10 h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center transition-all duration-300 ${
+              isBrand
+                ? 'bg-brand-500/10 border border-brand-500/30 group-hover:bg-brand-500/20 group-hover:scale-110'
+                : 'bg-accent-500/10 border border-accent-500/30 group-hover:bg-accent-500/20 group-hover:scale-110'
+            }`}
+          >
+            <Icon
+              size={20}
+              className={isBrand ? 'text-brand-500' : 'text-accent-500'}
+            />
+          </div>
+
+          {trend && (
+            <span
+              className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                isBrand
+                  ? 'bg-brand-500/10 text-brand-400'
+                  : 'bg-accent-500/10 text-accent-300'
+              }`}
+            >
+              <TrendingUp size={10} />
+              {trend}
+            </span>
+          )}
+        </div>
+
+        <div className="text-2xl md:text-3xl font-bold text-text-primary leading-none mb-1.5 tracking-tight">
+          {animated}
+          {suffix}
+        </div>
+        <div className="text-xs md:text-sm text-text-muted">{label}</div>
+      </div>
+    </div>
+  );
+}
+
 export function StatsGrid({ overview }: StatsGridProps) {
   const containerRef = useScrollAnimation<HTMLElement>({
-    y: 30,
-    duration: 0.6,
-    stagger: 0.08,
+    y: 40,
+    duration: 0.8,
+    stagger: 0.1,
   });
 
   const stats = [
     {
       icon: BookOpen,
       label: 'Módulos ativos',
-      value: String(overview?.stats.active_modules ?? 0),
+      value: overview?.stats.active_modules ?? 0,
       accent: 'brand' as const,
     },
     {
       icon: Trophy,
-      label: 'Concluídos',
-      value: String(overview?.stats.completed_modules ?? 0),
+      label: 'Módulos concluídos',
+      value: overview?.stats.completed_modules ?? 0,
       accent: 'accent' as const,
     },
     {
       icon: Clock,
       label: 'Horas de estudo',
-      value: `${overview?.stats.study_hours ?? 0}h`,
+      value: Math.round(overview?.stats.study_hours ?? 0),
+      suffix: 'h',
       accent: 'brand' as const,
     },
     {
       icon: Target,
       label: 'Meta semanal',
-      value: overview?.stats.weekly_goal_progress ?? '0/5',
+      value: Number(
+        overview?.stats.weekly_goal_progress?.split('/')[0] ?? 0
+      ),
+      suffix: `/${
+        overview?.stats.weekly_goal_progress?.split('/')[1] ?? 5
+      }`,
       accent: 'accent' as const,
     },
   ];
 
   return (
     <section ref={containerRef}>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          const isBrand = stat.accent === 'brand';
-
-          return (
-            <div
-              key={stat.label}
-              data-animate
-              className="group p-4 md:p-5 rounded-xl border border-border bg-surface-elevated hover:border-border-strong transition-all duration-300"
-            >
-              <div
-                className={`w-9 h-9 md:w-10 md:h-10 rounded-lg flex items-center justify-center mb-3 transition-colors ${
-                  isBrand
-                    ? 'bg-brand-500/10 border border-brand-500/30 group-hover:bg-brand-500/20'
-                    : 'bg-accent-500/10 border border-accent-500/30 group-hover:bg-accent-500/20'
-                }`}
-              >
-                <Icon
-                  size={18}
-                  className={isBrand ? 'text-brand-500' : 'text-accent-500'}
-                />
-              </div>
-              <div className="text-xl md:text-2xl font-bold text-text-primary leading-none mb-1">
-                {stat.value}
-              </div>
-              <div className="text-xs md:text-sm text-text-muted">
-                {stat.label}
-              </div>
-            </div>
-          );
-        })}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+        {stats.map((stat) => (
+          <StatCard key={stat.label} {...stat} />
+        ))}
       </div>
     </section>
   );

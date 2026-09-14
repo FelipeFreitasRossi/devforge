@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -17,6 +17,7 @@ export function StudentHeader() {
   const { user: authUser, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   // ⚠️ DEV ONLY: fallback para usuário fake
   const user = authUser || {
@@ -25,6 +26,14 @@ export function StudentHeader() {
     email: 'dev@teste.com',
     paid: true,
   };
+
+  // Detecta scroll para efeito glass
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -39,9 +48,16 @@ export function StudentHeader() {
     .toUpperCase();
 
   return (
-    <header className="sticky top-0 z-40 bg-black/90 backdrop-blur-lg border-b border-border">
+    <header
+      className={`sticky top-0 z-40 border-b transition-all duration-300 ${
+        scrolled
+          ? 'bg-black/95 backdrop-blur-xl border-border shadow-lg shadow-black/20'
+          : 'bg-black/80 backdrop-blur-md border-transparent'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
+          {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group shrink-0">
             <img
               src={LOGO_URL}
@@ -53,6 +69,7 @@ export function StudentHeader() {
             </span>
           </Link>
 
+          {/* Busca desktop */}
           <div className="hidden md:flex flex-1 max-w-md mx-8">
             <div className="relative w-full">
               <Search
@@ -62,27 +79,33 @@ export function StudentHeader() {
               <input
                 type="text"
                 placeholder="Buscar aulas, módulos..."
-                className="w-full pl-9 pr-4 py-2 rounded-lg bg-surface-elevated border border-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-500 transition-colors"
+                className="w-full pl-9 pr-4 py-2 rounded-lg bg-surface-elevated border border-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/30 transition-all"
               />
             </div>
           </div>
 
+          {/* Ações */}
           <div className="flex items-center gap-2">
+            {/* Notificações */}
             <button
               className="relative p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-elevated transition-colors"
               aria-label="Notificações"
             >
               <Bell size={18} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-500" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-500">
+                <span className="absolute inset-0 rounded-full bg-brand-500 animate-ping opacity-75" />
+              </span>
             </button>
 
+            {/* Avatar desktop */}
             <div className="relative hidden sm:block">
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="flex items-center gap-2 p-1.5 pr-3 rounded-lg hover:bg-surface-elevated transition-colors"
+                aria-label="Menu do usuário"
               >
-                <div className="w-8 h-8 rounded-full bg-brand-500/15 border border-brand-500/40 flex items-center justify-center">
-                  <span className="text-xs font-bold text-brand-500">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-500/30 to-brand-600/20 border border-brand-500/40 flex items-center justify-center">
+                  <span className="text-xs font-bold text-brand-400">
                     {initials}
                   </span>
                 </div>
@@ -97,8 +120,8 @@ export function StudentHeader() {
                     className="fixed inset-0 z-40"
                     onClick={() => setIsProfileOpen(false)}
                   />
-                  <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-border bg-surface-elevated shadow-card overflow-hidden z-50">
-                    <div className="p-4 border-b border-border">
+                  <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-border bg-surface-elevated shadow-2xl overflow-hidden z-50 animate-fade-in">
+                    <div className="p-4 border-b border-border bg-gradient-to-br from-brand-500/5 to-transparent">
                       <p className="text-sm font-semibold text-text-primary truncate">
                         {user.name}
                       </p>
@@ -124,20 +147,27 @@ export function StudentHeader() {
               )}
             </div>
 
+            {/* Menu mobile */}
             <button
               className="sm:hidden p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-elevated transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Menu"
             >
               {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
 
-        {isMenuOpen && (
-          <div className="sm:hidden pb-4 border-t border-border">
-            <div className="pt-3 flex items-center gap-3 pb-4">
-              <div className="w-10 h-10 rounded-full bg-brand-500/15 border border-brand-500/40 flex items-center justify-center">
-                <span className="text-sm font-bold text-brand-500">
+        {/* Menu mobile expandido */}
+        <div
+          className={`sm:hidden overflow-hidden transition-all duration-300 ${
+            isMenuOpen ? 'max-h-96 pb-4' : 'max-h-0'
+          }`}
+        >
+          <div className="border-t border-border">
+            <div className="pt-4 flex items-center gap-3 pb-4">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500/30 to-brand-600/20 border border-brand-500/40 flex items-center justify-center">
+                <span className="text-sm font-bold text-brand-400">
                   {initials}
                 </span>
               </div>
@@ -164,7 +194,7 @@ export function StudentHeader() {
               </button>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </header>
   );

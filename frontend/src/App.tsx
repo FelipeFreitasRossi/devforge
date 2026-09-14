@@ -6,6 +6,7 @@ import { Login } from './pages/Login';
 import { Cadastro } from './pages/Cadastro';
 import { Checkout } from './pages/Checkout';
 import { StudentArea } from './pages/StudentArea';
+import { LessonPage } from './pages/LessonPage';
 
 function App() {
   return (
@@ -23,6 +24,10 @@ function App() {
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/minha-area" element={<StudentArea />} />
+        <Route
+          path="/minha-area/curso/:moduleId/licao/:lessonId"
+          element={<LessonPage />}
+        />
       </Routes>
     </AuthProvider>
   );

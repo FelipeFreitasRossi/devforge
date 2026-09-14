@@ -119,3 +119,138 @@ section {
   --color-surface-overlay: #27272a;
   --color-text-muted: #71717a;
 }
+
+/* Shimmer effect para barras de progresso */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+/* Fade in suave para elementos */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Glow pulse para conquistas */
+@keyframes glowPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 20px -5px rgba(245, 158, 11, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px -5px rgba(245, 158, 11, 0.6);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* ============================================================
+   NOVO — estilos para HeroSection, ActivityChart, NextAchievement,
+   ActivityTimeline, Skeleton e EmptyState
+   ============================================================ */
+
+/* Cartão base reutilizável (padroniza os cards) */
+.card-base {
+  background-color: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-card);
+}
+
+.card-base:hover {
+  border-color: var(--color-border-strong);
+}
+
+/* Anel de progresso (círculo) */
+.progress-ring-track {
+  stroke: var(--color-surface-overlay);
+}
+
+.progress-ring-fill {
+  stroke: var(--color-brand-500);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Linha do tempo (atividades recentes) */
+.timeline-line {
+  background: linear-gradient(
+    to bottom,
+    var(--color-brand-500),
+    var(--color-border) 90%
+  );
+}
+
+.timeline-dot {
+  background-color: var(--color-surface-elevated);
+  border: 2px solid var(--color-brand-500);
+}
+
+/* Skeleton loading (substitui spinners) */
+@keyframes skeletonPulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.skeleton {
+  background-color: var(--color-surface-overlay);
+  border-radius: 0.5rem;
+  animation: skeletonPulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* Foco visível (acessibilidade) */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* Hover lift padronizado */
+.hover-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px -10px rgba(0, 0, 0, 0.7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-lift:hover {
+    transform: none;
+  }
+}

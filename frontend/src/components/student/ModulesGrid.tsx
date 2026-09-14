@@ -1,4 +1,5 @@
-import { BookOpen, Lock, CheckCircle2, Clock } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { BookOpen, Lock, CheckCircle2, Clock, ArrowRight } from 'lucide-react';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import type { DashboardModule } from '../../services/api';
 
@@ -11,17 +12,12 @@ function ModuleCard({ module }: { module: DashboardModule }) {
   const isInProgress = module.status === 'in_progress';
   const isLocked = module.status === 'locked';
 
-  return (
-    <article
-      data-animate
-      className={`group relative p-5 md:p-6 rounded-xl border transition-all duration-300 ${
-        isLocked
-          ? 'border-border bg-surface-elevated/50 opacity-60'
-          : isInProgress
-          ? 'border-brand-500/40 bg-gradient-to-br from-brand-500/5 via-surface-elevated to-surface-elevated hover:border-brand-500/60'
-          : 'border-border bg-surface-elevated hover:border-border-strong'
-      }`}
-    >
+  // Pega a primeira lição do módulo (para linkar)
+  const firstLessonId = `${module.id}-01`;
+  const lessonLink = `/minha-area/curso/${module.id}/licao/${firstLessonId}`;
+
+  const cardContent = (
+    <>
       <div className="flex items-start justify-between gap-4 mb-4">
         <span
           className={`text-2xl font-bold font-mono leading-none ${
@@ -86,13 +82,43 @@ function ModuleCard({ module }: { module: DashboardModule }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-3 text-xs text-text-muted">
-        <span className="flex items-center gap-1.5">
+      <div className="flex items-center justify-between">
+        <span className="flex items-center gap-1.5 text-xs text-text-muted">
           <Clock size={12} />
           {module.duration_hours}h
         </span>
+
+        {!isLocked && (
+          <span className="flex items-center gap-1 text-xs font-medium text-brand-500 group-hover:gap-2 transition-all">
+            {isCompleted ? 'Revisar' : isInProgress ? 'Continuar' : 'Começar'}
+            <ArrowRight size={12} />
+          </span>
+        )}
       </div>
-    </article>
+    </>
+  );
+
+  const baseClasses = `group relative block p-5 md:p-6 rounded-xl border transition-all duration-300 ${
+    isLocked
+      ? 'border-border bg-surface-elevated/50 opacity-60 cursor-not-allowed'
+      : isInProgress
+      ? 'border-brand-500/40 bg-gradient-to-br from-brand-500/5 via-surface-elevated to-surface-elevated hover:border-brand-500/70 hover:-translate-y-1'
+      : 'border-border bg-surface-elevated hover:border-brand-500/40 hover:-translate-y-1'
+  }`;
+
+  // Se bloqueado, não é clicável
+  if (isLocked) {
+    return (
+      <article data-animate className={baseClasses}>
+        {cardContent}
+      </article>
+    );
+  }
+
+  return (
+    <Link to={lessonLink} data-animate className={baseClasses}>
+      {cardContent}
+    </Link>
   );
 }
 
@@ -103,10 +129,7 @@ export function ModulesGrid({ modules }: ModulesGridProps) {
     stagger: 0.08,
   });
 
-  const totalLessons = modules.reduce(
-    (acc, m) => acc + m.lessons_count,
-    0
-  );
+  const totalLessons = modules.reduce((acc, m) => acc + m.lessons_count, 0);
 
   return (
     <section ref={containerRef}>

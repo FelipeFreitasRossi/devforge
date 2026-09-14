@@ -7,10 +7,13 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 interface ScrollAnimationOptions {
   y?: number;
+  x?: number;
+  scale?: number;
   opacity?: number;
   duration?: number;
   stagger?: number;
   start?: string;
+  delay?: number;
 }
 
 export function useScrollAnimation<T extends HTMLElement>(
@@ -19,10 +22,13 @@ export function useScrollAnimation<T extends HTMLElement>(
   const containerRef = useRef<T>(null);
   const {
     y = 40,
+    x = 0,
+    scale = 1,
     opacity = 0,
-    duration = 0.8,
-    stagger = 0.1,
+    duration = 0.9,
+    stagger = 0.12,
     start = 'top 90%',
+    delay = 0,
   } = options;
 
   useGSAP(
@@ -33,29 +39,28 @@ export function useScrollAnimation<T extends HTMLElement>(
       const elements = container.querySelectorAll('[data-animate]');
       if (!elements.length) return;
 
-      // Usa gsap.set + gsap.to em vez de gsap.from
-      // Isso evita o problema de elementos presos em opacity 0
-      gsap.set(elements, { opacity, y });
+      gsap.set(elements, { opacity, y, x, scale });
 
       const tl = gsap.to(elements, {
         opacity: 1,
         y: 0,
+        x: 0,
+        scale: 1,
         duration,
         stagger,
+        delay,
         ease: 'power3.out',
         scrollTrigger: {
           trigger: container,
           start,
-          toggleActions: 'play none none none', // NÃO reverte
-          once: true, // dispara só uma vez
+          once: true,
         },
       });
 
-      // Fallback: se por algum motivo o ScrollTrigger não disparar,
-      // força a visibilidade após 1s
+      // Fallback de segurança
       const fallback = setTimeout(() => {
         if (gsap.getProperty(elements[0], 'opacity') === 0) {
-          gsap.set(elements, { opacity: 1, y: 0 });
+          gsap.set(elements, { opacity: 1, y: 0, x: 0, scale: 1 });
           tl.kill();
         }
       }, 1500);

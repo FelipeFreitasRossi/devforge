@@ -6,7 +6,6 @@ interface AchievementsProps {
   achievements: DashboardAchievement[];
 }
 
-// Mapeamento de ID de conquista para ícone
 const ICON_MAP: Record<string, typeof Award> = {
   first_lesson: Zap,
   streak_3: Target,
@@ -18,8 +17,8 @@ const ICON_MAP: Record<string, typeof Award> = {
 
 export function Achievements({ achievements }: AchievementsProps) {
   const containerRef = useScrollAnimation<HTMLElement>({
-    y: 30,
-    duration: 0.6,
+    y: 40,
+    duration: 0.8,
     stagger: 0.08,
   });
 
@@ -27,19 +26,22 @@ export function Achievements({ achievements }: AchievementsProps) {
 
   return (
     <section ref={containerRef}>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-5">
         <h2
           data-animate
-          className="text-lg md:text-xl font-bold text-text-primary"
+          className="text-fluid-xl font-bold text-text-primary tracking-tight"
         >
           Conquistas
         </h2>
-        <span data-animate className="text-xs text-text-muted font-mono">
-          {unlockedCount}/{achievements.length} desbloqueadas
+        <span
+          data-animate
+          className="text-xs text-text-muted font-mono bg-surface-elevated px-3 py-1 rounded-full border border-border"
+        >
+          {unlockedCount}/{achievements.length}
         </span>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {achievements.map((achievement) => {
           const Icon = ICON_MAP[achievement.id] || Award;
           const isBrand = achievement.accent === 'brand';
@@ -48,46 +50,62 @@ export function Achievements({ achievements }: AchievementsProps) {
             <div
               key={achievement.id}
               data-animate
-              className={`p-4 rounded-xl border text-center transition-all duration-300 ${
+              className={`group relative p-5 rounded-2xl border text-center transition-all duration-500 overflow-hidden ${
                 achievement.unlocked
                   ? isBrand
-                    ? 'border-brand-500/40 bg-brand-500/5 hover:border-brand-500/60'
-                    : 'border-accent-500/40 bg-accent-500/5 hover:border-accent-500/60'
-                  : 'border-border bg-surface-elevated/50 opacity-50'
+                    ? 'border-brand-500/40 bg-gradient-to-br from-brand-500/10 to-surface-elevated hover:border-brand-500/70 hover:-translate-y-1 hover:shadow-glow'
+                    : 'border-accent-500/40 bg-gradient-to-br from-accent-500/10 to-surface-elevated hover:border-accent-500/70 hover:-translate-y-1'
+                  : 'border-border bg-surface-elevated/40'
               }`}
             >
-              <div
-                className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-3 ${
-                  achievement.unlocked
-                    ? isBrand
-                      ? 'bg-brand-500/15 border border-brand-500/40'
-                      : 'bg-accent-500/15 border border-accent-500/40'
-                    : 'bg-surface-overlay border border-border'
-                }`}
-              >
-                {achievement.unlocked ? (
-                  <Icon
-                    size={20}
-                    className={
-                      isBrand ? 'text-brand-500' : 'text-accent-500'
-                    }
-                  />
-                ) : (
-                  <Lock size={16} className="text-text-muted" />
-                )}
+              {/* Glow nos desbloqueados */}
+              {achievement.unlocked && (
+                <div
+                  aria-hidden
+                  className="absolute -top-12 -right-12 w-32 h-32 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl pointer-events-none"
+                  style={{
+                    background: isBrand
+                      ? 'radial-gradient(circle, rgba(245, 158, 11, 0.4), transparent 70%)'
+                      : 'radial-gradient(circle, rgba(59, 130, 246, 0.4), transparent 70%)',
+                  }}
+                />
+              )}
+
+              <div className="relative">
+                <div
+                  className={`w-14 h-14 mx-auto rounded-2xl flex items-center justify-center mb-4 transition-all duration-500 ${
+                    achievement.unlocked
+                      ? isBrand
+                        ? 'bg-brand-500/15 border border-brand-500/40 group-hover:scale-110 group-hover:bg-brand-500/25'
+                        : 'bg-accent-500/15 border border-accent-500/40 group-hover:scale-110 group-hover:bg-accent-500/25'
+                      : 'bg-surface-overlay border border-border'
+                  }`}
+                >
+                  {achievement.unlocked ? (
+                    <Icon
+                      size={24}
+                      className={
+                        isBrand ? 'text-brand-500' : 'text-accent-500'
+                      }
+                    />
+                  ) : (
+                    <Lock size={18} className="text-text-muted" />
+                  )}
+                </div>
+
+                <h3
+                  className={`text-sm font-semibold mb-1.5 ${
+                    achievement.unlocked
+                      ? 'text-text-primary'
+                      : 'text-text-secondary'
+                  }`}
+                >
+                  {achievement.title}
+                </h3>
+                <p className="text-xs text-text-muted leading-snug">
+                  {achievement.description}
+                </p>
               </div>
-              <h3
-                className={`text-sm font-semibold mb-1 ${
-                  achievement.unlocked
-                    ? 'text-text-primary'
-                    : 'text-text-secondary'
-                }`}
-              >
-                {achievement.title}
-              </h3>
-              <p className="text-xs text-text-muted leading-snug">
-                {achievement.description}
-              </p>
             </div>
           );
         })}

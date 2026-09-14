@@ -2,10 +2,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from datetime import datetime
 from app.auth import get_current_user
-from app.database import (
-    progress_collection,
-    daily_activity_collection,
-)
+from app.database import progress_collection, daily_activity_collection
 from app.analytics import (
     calculate_streak,
     calculate_total_hours,
@@ -14,7 +11,7 @@ from app.analytics import (
     get_all_modules_with_progress,
     get_all_achievements,
     check_achievements,
-    CURRICULUM,
+    get_weekly_activity,
 )
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
@@ -60,6 +57,12 @@ async def get_achievements(user=Depends(get_current_user)):
     return {"achievements": get_all_achievements(user_id)}
 
 
+@router.get("/weekly-activity")
+async def weekly_activity(user=Depends(get_current_user)):
+    user_id = str(user["_id"])
+    return {"activity": get_weekly_activity(user_id)}
+
+
 @router.post("/progress")
 async def post_progress(
     data: ProgressInput, user=Depends(get_current_user)
@@ -67,7 +70,6 @@ async def post_progress(
     user_id = str(user["_id"])
     today = datetime.utcnow().strftime("%Y-%m-%d")
 
-    # Salva progresso da aula
     progress_collection.update_one(
         {
             "user_id": user_id,
@@ -87,7 +89,6 @@ async def post_progress(
         upsert=True,
     )
 
-    # Registra atividade diária (para streak)
     daily_activity_collection.update_one(
         {"user_id": user_id, "date": today},
         {
@@ -97,7 +98,6 @@ async def post_progress(
         upsert=True,
     )
 
-    # Verifica conquistas
     new_achievements = check_achievements(user_id)
 
     return {"success": True, "new_achievements": new_achievements}

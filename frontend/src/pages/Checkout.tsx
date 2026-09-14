@@ -31,13 +31,8 @@ const METHOD_LABELS: Record<PaymentMethod, string> = {
   credit_card: 'Cartão',
 };
 
-/**
- * Copia texto para a área de transferência com fallback.
- * navigator.clipboard só funciona em HTTPS/localhost.
- * Fallback usa document.execCommand('copy') para navegadores antigos.
- */
+// Função de cópia com fallback (funciona em qualquer navegador)
 async function copyToClipboard(text: string): Promise<boolean> {
-  // Tentativa 1: API moderna
   if (navigator.clipboard && window.isSecureContext) {
     try {
       await navigator.clipboard.writeText(text);
@@ -47,13 +42,11 @@ async function copyToClipboard(text: string): Promise<boolean> {
     }
   }
 
-  // Tentativa 2: Fallback com textarea
   try {
     const textarea = document.createElement('textarea');
     textarea.value = text;
     textarea.style.position = 'fixed';
     textarea.style.top = '-9999px';
-    textarea.style.left = '-9999px';
     document.body.appendChild(textarea);
     textarea.focus();
     textarea.select();
@@ -75,17 +68,14 @@ export function Checkout() {
   const [copyError, setCopyError] = useState(false);
   const [error, setError] = useState('');
 
-  // Proteção de rota
+  // Se já pagou, redireciona para a área do aluno
   useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/login');
-    }
     if (user?.paid) {
-      navigate('/dashboard');
+      navigate('/minha-area');
     }
-  }, [user, authLoading, navigate]);
+  }, [user, navigate]);
 
-  // Polling de status (exceto cartão)
+  // Polling de status (exceto cartão, que já retorna pago)
   useEffect(() => {
     if (!payment?.order_id || payment.method === 'credit_card') return;
 
@@ -96,7 +86,7 @@ export function Checkout() {
         };
         if (result.paid && user) {
           updateUser({ ...user, paid: true });
-          navigate('/dashboard');
+          navigate('/minha-area');
         }
       } catch {
         // Silencia erros do polling
@@ -148,7 +138,7 @@ export function Checkout() {
 
       if (result.paid && user) {
         updateUser({ ...user, paid: true });
-        navigate('/dashboard');
+        navigate('/minha-area');
       } else {
         setError(
           'Pagamento não aprovado. Verifique os dados e tente novamente.'
@@ -213,8 +203,7 @@ export function Checkout() {
             </p>
             <div className="grid grid-cols-2 gap-3">
               {(['pix', 'credit_card'] as PaymentMethod[]).map((method) => {
-                const Icon =
-                  method === 'pix' ? QrCode : CreditCardIcon;
+                const Icon = method === 'pix' ? QrCode : CreditCardIcon;
                 const isSelected = selectedMethod === method;
 
                 return (
@@ -405,7 +394,6 @@ export function Checkout() {
           )}
         </div>
 
-        {/* Valor */}
         <div className="p-4 rounded-lg bg-surface border border-border text-center">
           <p className="text-xs text-text-muted mb-1">Valor a pagar</p>
           <p className="text-2xl font-bold text-brand-500">R$ 19,99</p>
@@ -414,7 +402,6 @@ export function Checkout() {
           </p>
         </div>
 
-        {/* Status */}
         <div className="p-3 rounded-lg bg-brand-500/10 border border-brand-500/30 flex items-center gap-3">
           <Loader2
             size={18}

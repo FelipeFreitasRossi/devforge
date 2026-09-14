@@ -21,7 +21,7 @@ export function Login() {
 
     try {
       await login(email, password);
-      navigate('/dashboard');
+      navigate('/minha-area'); // ← corrigido (era /dashboard)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao fazer login');
     } finally {
