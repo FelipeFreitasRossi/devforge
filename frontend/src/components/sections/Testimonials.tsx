@@ -3,23 +3,23 @@ import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
 const testimonials = [
   {
-    name: 'Ana Ribeiro',
+    name: 'Gabrielly',
     role: 'Dev Frontend na Vercel',
-    avatar: 'AR',
-    text: 'A trilha da DevForge me tirou do zero absoluto e em 8 meses eu consegui minha primeira vaga como dev. Os projetos do portfólio fizeram toda a diferença.',
+    avatar: 'GM',
+    text: 'A trilha da Devstack me tirou do zero absoluto e em 8 meses eu consegui minha primeira vaga como dev. Os projetos do portfólio fizeram toda a diferença.',
     rating: 5,
   },
   {
-    name: 'Carlos Mendes',
+    name: 'Pedro Henrique',
     role: 'Fullstack Developer',
-    avatar: 'CM',
+    avatar: 'PH',
     text: 'O que mais me impressionou foi a profundidade do conteúdo de backend. Não é curso raso — é formação de verdade, com projetos complexos e boas práticas.',
     rating: 5,
   },
   {
-    name: 'Juliana Costa',
+    name: 'João Pedro',
     role: 'Dev Python na Nubank',
-    avatar: 'JC',
+    avatar: 'JP',
     text: 'Paguei uma vez e nunca mais me preocupei. Sempre que sai conteúdo novo, eu acesso. Vale cada centavo. Recomendo pra qualquer pessoa que queira levar programação a sério.',
     rating: 5,
   },
@@ -36,7 +36,6 @@ export function Testimonials() {
       ref={containerRef}
       className="px-4 sm:px-6 lg:px-8 py-fluid-section relative overflow-hidden"
     >
-      {/* Glow de fundo */}
       <div
         aria-hidden
         className="absolute inset-0 -z-10 opacity-25"
@@ -66,35 +65,31 @@ export function Testimonials() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
-          {testimonials.map((t) => (
+          {testimonials.map((t, i) => (
             <div
-              key={t.name}
+              key={i}
               data-animate
               className="relative flex flex-col p-6 md:p-7 rounded-xl border border-border bg-surface-elevated hover:border-brand-500/40 transition-all duration-300"
             >
-              {/* Aspas decorativas */}
               <Quote
                 size={32}
                 className="text-brand-500/20 absolute top-5 right-5"
               />
 
-              {/* Estrelas */}
               <div className="flex gap-1 mb-5">
-                {Array.from({ length: t.rating }).map((_, i) => (
+                {Array.from({ length: t.rating }).map((_, j) => (
                   <Star
-                    key={i}
+                    key={j}
                     size={16}
                     className="fill-brand-500 text-brand-500"
                   />
                 ))}
               </div>
 
-              {/* Texto */}
               <p className="text-text-secondary leading-relaxed text-sm md:text-base mb-6 flex-1">
                 "{t.text}"
               </p>
 
-              {/* Autor */}
               <div className="flex items-center gap-3 pt-5 border-t border-border">
                 <div className="w-10 h-10 rounded-full bg-brand-500/15 border border-brand-500/30 flex items-center justify-center">
                   <span className="text-sm font-bold text-brand-500">

@@ -1,5 +1,8 @@
 const API_URL = 'http://localhost:8000/api';
 
+// ============================================================================
+// HELPERS
+// ============================================================================
 function getToken(): string | null {
   return localStorage.getItem('token');
 }
@@ -23,6 +26,7 @@ async function request<T>(
     headers,
   });
 
+  // Sessão expirada
   if (response.status === 401) {
     localStorage.removeItem('token');
     if (!window.location.pathname.startsWith('/login')) {
@@ -31,6 +35,7 @@ async function request<T>(
     throw new Error('Sessão expirada. Faça login novamente.');
   }
 
+  // Lê como texto para não quebrar em respostas não-JSON
   const rawText = await response.text();
 
   let data: any = null;
@@ -48,7 +53,9 @@ async function request<T>(
   return data as T;
 }
 
-// ============ AUTH + PAYMENTS ============
+// ============================================================================
+// AUTH + PAYMENTS
+// ============================================================================
 export const api = {
   register: (name: string, email: string, password: string) =>
     request('/auth/register', {
@@ -84,7 +91,9 @@ export const api = {
     request(`/payments/status/${orderId}`),
 };
 
-// ============ DASHBOARD ============
+// ============================================================================
+// DASHBOARD — Types
+// ============================================================================
 export interface DashboardOverview {
   user: { name: string; email: string };
   stats: {
@@ -149,14 +158,31 @@ export interface TimelineEntry {
   date: string;
 }
 
+// ============================================================================
+// DASHBOARD — API
+// ============================================================================
 export const dashboardApi = {
   getOverview: () => request<DashboardOverview>('/dashboard/overview'),
+
   getModules: () =>
     request<{ modules: DashboardModule[] }>('/dashboard/modules'),
+
   getAchievements: () =>
-    request<{ achievements: DashboardAchievement[] }>('/dashboard/achievements'),
+    request<{ achievements: DashboardAchievement[] }>(
+      '/dashboard/achievements'
+    ),
+
   getWeeklyActivity: () =>
     request<{ activity: WeeklyActivity[] }>('/dashboard/weekly-activity'),
+
+  getTimeDistribution: () =>
+    request<{ distribution: ModuleTimeDistribution[] }>(
+      '/dashboard/time-distribution'
+    ),
+
+  getTimeline: () =>
+    request<{ entries: TimelineEntry[] }>('/dashboard/timeline'),
+
   postProgress: (data: {
     module_id: string;
     lesson_id: string;
@@ -167,14 +193,11 @@ export const dashboardApi = {
       '/dashboard/progress',
       { method: 'POST', body: JSON.stringify(data) }
     ),
-  getTimeDistribution: () =>
-    request<{ distribution: ModuleTimeDistribution[] }>(
-      '/dashboard/time-distribution'
-    ),
-  getTimeline: () => request<{ entries: TimelineEntry[] }>('/dashboard/timeline'),
 };
 
-// ============ LESSON TYPES ============
+// ============================================================================
+// LESSONS — Types
+// ============================================================================
 export type LessonBlockType = 'text' | 'code' | 'diagram';
 
 export interface LessonBlock {
@@ -208,7 +231,11 @@ export interface Lesson {
   summary: string[];
 }
 
-export type LessonSidebarStatus = 'completed' | 'current' | 'pending' | 'locked';
+export type LessonSidebarStatus =
+  | 'completed'
+  | 'current'
+  | 'pending'
+  | 'locked';
 
 export interface LessonSidebarLesson {
   id: string;
@@ -251,6 +278,9 @@ export type SubmitCodeResponse =
       hint: string;
     };
 
+// ============================================================================
+// LESSONS — API
+// ============================================================================
 export const lessonApi = {
   getLesson: (lessonId: string) =>
     request<LessonDetailResponse>(`/lessons/${lessonId}`),
@@ -271,7 +301,28 @@ export const lessonApi = {
     }),
 };
 
-// ============ PROFILE ============
+// ============================================================================
+// SEARCH — Types + API
+// ============================================================================
+export interface SearchLesson {
+  id: string;
+  title: string;
+  module_id: string;
+  module_title: string;
+  reading_time_minutes: number;
+}
+
+export interface SearchIndexResponse {
+  lessons: SearchLesson[];
+}
+
+export const searchApi = {
+  getIndex: () => request<SearchIndexResponse>('/lessons/search-index'),
+};
+
+// ============================================================================
+// PROFILE — Types + API
+// ============================================================================
 export interface ProfileUser {
   id: string;
   name: string;
@@ -312,21 +363,4 @@ export const profileApi = {
         new_password: newPassword,
       }),
     }),
-};
-
-// ============ SEARCH ============
-export interface SearchLesson {
-  id: string;
-  title: string;
-  module_id: string;
-  module_title: string;
-  reading_time_minutes: number;
-}
-
-export interface SearchIndexResponse {
-  lessons: SearchLesson[];
-}
-
-export const searchApi = {
-  getIndex: () => request<SearchIndexResponse>('/lessons/search-index'),
 };

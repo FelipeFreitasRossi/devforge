@@ -8,7 +8,7 @@ from app.database import (
     daily_activity_collection,
     lesson_submissions_collection,
 )
-from app.analytics import get_lesson_sidebar, check_achievements
+from app.analytics import get_lesson_sidebar, check_achievements, CURRICULUM
 from app.lessons_content import (
     get_lesson,
     get_adjacent_lesson_ids,
@@ -31,7 +31,6 @@ def _find_exercise(lesson: dict, exercise_id: str | None) -> dict:
     topics = lesson.get("topics") or []
     if topics:
         if exercise_id is None:
-            # Pega o primeiro exercise dos topics
             for topic in topics:
                 if topic.get("exercise"):
                     return topic["exercise"]
@@ -55,10 +54,16 @@ def _find_exercise(lesson: dict, exercise_id: str | None) -> dict:
     raise HTTPException(status_code=404, detail="Exercício não encontrado")
 
 
+# ============================================================================
+# ATENÇÃO: rotas específicas ANTES da rota genérica /{lesson_id}
+# ============================================================================
+
 @router.get("/search-index")
 async def search_index(user=Depends(get_current_user)):
-    from app.analytics import CURRICULUM
-
+    """
+    Retorna uma lista plana de todas as lições do currículo.
+    Usado pela barra de pesquisa do frontend.
+    """
     lessons = []
     for module in CURRICULUM:
         for lesson in module["lessons"]:
@@ -71,6 +76,40 @@ async def search_index(user=Depends(get_current_user)):
             })
 
     return {"lessons": lessons}
+
+
+# ============================================================================
+# ROTA GENÉRICA — SEMPRE DEPOIS das específicas
+# ============================================================================
+
+@router.get("/{lesson_id}")
+async def get_lesson_detail(lesson_id: str, user=Depends(get_current_user)):
+    lesson = get_lesson(lesson_id)
+    if not lesson:
+        raise HTTPException(status_code=404, detail="Lição não encontrada")
+
+    user_id = str(user["_id"])
+    prev_id, next_id = get_adjacent_lesson_ids(lesson_id)
+
+    already_completed = progress_collection.find_one({
+        "user_id": user_id,
+        "lesson_id": lesson_id,
+        "completed": True,
+    }) is not None
+
+    attempts = lesson_submissions_collection.count_documents({
+        "user_id": user_id,
+        "lesson_id": lesson_id,
+    })
+
+    return {
+        "lesson": lesson,
+        "already_completed": already_completed,
+        "attempts": attempts,
+        "prev_lesson_id": prev_id,
+        "next_lesson_id": next_id,
+        "sidebar": get_lesson_sidebar(user_id, lesson_id),
+    }
 
 
 @router.post("/{lesson_id}/submit")

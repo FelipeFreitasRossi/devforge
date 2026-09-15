@@ -2,7 +2,6 @@
 lessons_content.py
 ==================
 Conteúdo das lições do Módulo 01 — Lógica de Programação.
-Lição 01-02 foi removida; a sequência visual é ajustada no frontend.
 """
 
 from app.analytics import CURRICULUM
@@ -127,12 +126,12 @@ LESSON_01_03 = {
             "exercise": {
                 "id": "01-03-ex1",
                 "title": "Nome e idade",
-                "statement": "Crie uma variável `nome` com o valor `'Ana'` e uma variável `idade` com o valor `30`. Imprima `nome` e depois `idade`, cada um em uma linha.",
+                "statement": "Crie uma variável `nome` com o valor `'Gabrielly Milhor'` e uma variável `idade` com o valor `30`. Imprima `nome` e depois `idade`, cada um em uma linha.",
                 "starter_code": "# Crie as variáveis\nnome = \nidade = \n\nprint(nome)\nprint(idade)",
                 "tests": [
                     {"validation": "output_equals", "expected": "30"},
                 ],
-                "hint": "nome = 'Ana' e idade = 30",
+                "hint": "nome = 'Gabrielly Milhor' e idade = 30",
             },
         },
     ],
@@ -166,7 +165,7 @@ LESSON_01_04 = {
                 {
                     "type": "code",
                     "caption": "Os 4 tipos básicos",
-                    "value": "nome = \"Ana\"        # str\nidade = 28           # int\naltura = 1.65        # float\nativo = True         # bool\n\nprint(type(nome))\nprint(type(idade))",
+                    "value": "nome = \"Gabrielly\"        # str\nidade = 28                  # int\naltura = 1.65               # float\nativo = True                # bool\n\nprint(type(nome))\nprint(type(idade))",
                 },
                 {"type": "text", "value": "**Strings sempre entre aspas.** Números sem aspas."},
                 {
@@ -178,12 +177,12 @@ LESSON_01_04 = {
             "exercise": {
                 "id": "01-04-ex1",
                 "title": "Descobrir o tipo",
-                "statement": "Crie três variáveis: `nome` com valor `'Ana'`, `idade` com valor `28` e `altura` com valor `1.65`. Imprima `type()` de cada uma, uma por linha.",
+                "statement": "Crie três variáveis: `nome` com valor `'Gabrielly'`, `idade` com valor `28` e `altura` com valor `1.65`. Imprima `type()` de cada uma, uma por linha.",
                 "starter_code": "nome = \nidade = \naltura = \n\nprint(type(nome))\nprint(type(idade))\nprint(type(altura))",
                 "tests": [
                     {"validation": "output_contains_all", "expected": ["str", "int", "float"]},
                 ],
-                "hint": "nome = 'Ana', idade = 28, altura = 1.65",
+                "hint": "nome = 'Gabrielly', idade = 28, altura = 1.65",
             },
         },
     ],
@@ -421,13 +420,13 @@ LESSON_01_09 = {
                 {
                     "type": "code",
                     "caption": "Criando e acessando listas",
-                    "value": "frutas = [\"maçã\", \"banana\", \"uva\"]\n\nprint(frutas[0])   # maçã\nprint(len(frutas)) # 3",
+                    "value": "nomes = [\"Gabrielly\", \"Carlos\", \"Marina\"]\n\nprint(nomes[0])   # Gabrielly\nprint(len(nomes)) # 3",
                 },
                 {"type": "text", "value": "Use **append()** para adicionar itens no fim da lista."},
                 {
                     "type": "code",
                     "caption": "Adicionando e percorrendo",
-                    "value": "frutas = [\"maçã\"]\nfrutas.append(\"banana\")\n\nfor fruta in frutas:\n    print(fruta)",
+                    "value": "nomes = [\"Gabrielly\"]\nnomes.append(\"Carlos\")\n\nfor nome in nomes:\n    print(nome)",
                 },
             ],
             "exercise": {
@@ -472,13 +471,13 @@ LESSON_01_10 = {
                 {
                     "type": "code",
                     "caption": "Criando um dicionário",
-                    "value": "pessoa = {\n    \"nome\": \"Ana\",\n    \"idade\": 28\n}\n\nprint(pessoa[\"nome\"])   # Ana",
+                    "value": "pessoa = {\n    \"nome\": \"Gabrielly\",\n    \"idade\": 28\n}\n\nprint(pessoa[\"nome\"])   # Gabrielly",
                 },
                 {"type": "text", "value": "Para **adicionar ou modificar**, atribua um valor a uma chave."},
                 {
                     "type": "code",
                     "caption": "Percorrendo um dicionário",
-                    "value": "pessoa = {\"nome\": \"Ana\", \"idade\": 28}\n\nfor chave in pessoa:\n    print(chave, pessoa[chave])",
+                    "value": "pessoa = {\"nome\": \"Gabrielly\", \"idade\": 28}\n\nfor chave in pessoa:\n    print(chave, pessoa[chave])",
                 },
             ],
             "exercise": {
@@ -593,7 +592,7 @@ LESSON_01_12 = {
 
 
 # ============================================================================
-# BANCO DE LIÇÕES — 01-02 foi removida
+# BANCO DE LIÇÕES
 # ============================================================================
 LESSONS: dict[str, dict] = {
     "01-01": LESSON_01_01,
