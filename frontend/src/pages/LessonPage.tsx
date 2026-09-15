@@ -24,6 +24,7 @@ export function LessonPage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarClosing, setSidebarClosing] = useState(false);
 
   const {
     data,
@@ -43,8 +44,33 @@ export function LessonPage() {
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
+    // Fecha ao mudar de lição (sem animação, mudança instantânea)
     setSidebarOpen(false);
+    setSidebarClosing(false);
   }, [lessonId]);
+
+  // Bloqueia scroll quando sidebar aberta no mobile
+  useEffect(() => {
+    if (window.innerWidth < 1024) {
+      document.body.style.overflow = sidebarOpen ? 'hidden' : '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [sidebarOpen]);
+
+  const openSidebar = () => {
+    setSidebarClosing(false);
+    setSidebarOpen(true);
+  };
+
+  const closeSidebar = () => {
+    setSidebarClosing(true);
+    setTimeout(() => {
+      setSidebarOpen(false);
+      setSidebarClosing(false);
+    }, 280);
+  };
 
   if (authLoading || loading) {
     return (
@@ -92,38 +118,60 @@ export function LessonPage() {
       <StudentHeader />
 
       <div className="max-w-7xl mx-auto flex">
+        {/* Sidebar DESKTOP */}
         <aside className="hidden lg:block w-72 shrink-0 border-r border-border min-h-[calc(100vh-4rem)] p-4 sticky top-16 max-h-[calc(100vh-4rem)] overflow-y-auto">
           <LessonSidebar sidebar={sidebar} currentLessonId={lesson.id} />
         </aside>
 
+        {/* Sidebar MOBILE (drawer com animação de entrada E saída) */}
         {sidebarOpen && (
           <>
+            {/* Overlay */}
             <div
-              className="lg:hidden fixed inset-0 bg-black/60 z-40"
-              onClick={() => setSidebarOpen(false)}
+              className={`lg:hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 ${
+                sidebarClosing ? 'animate-fade-out' : 'animate-fade-in'
+              }`}
+              onClick={closeSidebar}
             />
-            <aside className="lg:hidden fixed top-16 left-0 bottom-0 w-72 bg-surface border-r border-border z-50 p-4 overflow-y-auto">
-              <div className="flex items-center justify-between mb-4">
+
+            {/* Drawer */}
+            <aside
+              className={`lg:hidden fixed top-0 left-0 bottom-0 w-[85%] max-w-xs bg-surface border-r border-border z-50 flex flex-col ${
+                sidebarClosing
+                  ? 'animate-slide-out-left'
+                  : 'animate-slide-in-left'
+              }`}
+            >
+              {/* Topo */}
+              <div className="flex items-center justify-between p-4 border-b border-border">
                 <span className="text-xs font-semibold text-text-primary uppercase tracking-wider">
                   Trilha
                 </span>
                 <button
-                  onClick={() => setSidebarOpen(false)}
-                  className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-elevated"
+                  onClick={closeSidebar}
+                  className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-elevated transition-colors"
+                  aria-label="Fechar trilha"
                 >
-                  <X size={16} />
+                  <X size={18} />
                 </button>
               </div>
-              <LessonSidebar sidebar={sidebar} currentLessonId={lesson.id} />
+
+              {/* Conteúdo da sidebar com scroll */}
+              <div className="flex-1 overflow-y-auto p-4">
+                <LessonSidebar
+                  sidebar={sidebar}
+                  currentLessonId={lesson.id}
+                />
+              </div>
             </aside>
           </>
         )}
 
         <main className="flex-1 min-w-0">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-12">
             <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden inline-flex items-center gap-2 mb-6 px-3 py-2 rounded-lg border border-border bg-surface-elevated text-sm text-text-secondary hover:text-text-primary transition-colors"
+              onClick={openSidebar}
+              className="lg:hidden inline-flex items-center gap-2 mb-6 px-3.5 py-2.5 rounded-lg border border-border bg-surface-elevated text-sm text-text-secondary hover:text-text-primary hover:border-border-strong transition-colors"
             >
               <Menu size={16} />
               Ver trilha

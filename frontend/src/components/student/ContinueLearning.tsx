@@ -1,7 +1,8 @@
-import { FileCode, Clock, ChevronRight, BookOpen } from 'lucide-react';
-import { Button } from '../ui/Button';
+import { Play, Clock, ChevronRight, BookOpen, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import type { DashboardOverview } from '../../services/api';
+import { getDisplayNumberPadded } from '../../utils/lessonNumbers';
 
 interface ContinueLearningProps {
   overview: DashboardOverview | null;
@@ -19,118 +20,116 @@ export function ContinueLearning({ overview }: ContinueLearningProps) {
   if (!lesson) {
     return (
       <section ref={containerRef}>
-        <h2
-          data-animate
-          className="text-lg md:text-xl font-bold text-text-primary mb-4"
-        >
-          Continue estudando
-        </h2>
         <div
           data-animate
-          className="p-6 rounded-2xl border border-border bg-surface-elevated text-center"
+          className="relative rounded-2xl border border-emerald-500/25 bg-[#0c0c0e] overflow-hidden p-8 text-center"
         >
-          <p className="text-text-secondary text-sm">
-            Você concluiu todas as aulas disponíveis. Novos módulos em breve.
-          </p>
+          <div className="relative">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto mb-4">
+              <Sparkles size={22} className="text-emerald-500" />
+            </div>
+            <h3 className="text-lg font-bold text-text-primary mb-1">
+              Você concluiu tudo!
+            </h3>
+            <p className="text-sm text-text-muted">
+              Novos módulos serão adicionados em breve.
+            </p>
+          </div>
         </div>
       </section>
     );
   }
+
+  const lessonLink = `/minha-area/curso/${lesson.module_id}/licao/${lesson.lesson_id}`;
 
   return (
     <section ref={containerRef}>
       <div className="flex items-center justify-between mb-4">
         <h2
           data-animate
-          className="text-lg md:text-xl font-bold text-text-primary"
+          className="text-lg md:text-xl font-bold text-text-primary tracking-tight"
         >
           Continue estudando
         </h2>
+        <span
+          data-animate
+          className="text-xs text-text-muted uppercase tracking-widest font-medium"
+        >
+          Próxima aula
+        </span>
       </div>
 
-      <div
+      <Link
+        to={lessonLink}
         data-animate
-        className="relative group rounded-2xl border border-brand-500/30 bg-gradient-to-br from-brand-500/10 via-surface-elevated to-surface-elevated p-5 md:p-8 overflow-hidden hover:border-brand-500/60 transition-colors duration-300"
+        className="group block relative rounded-2xl border border-brand-500/25 bg-[#0c0c0e] overflow-hidden transition-all duration-500 hover:border-brand-500/50 hover:-translate-y-0.5"
       >
+        {/* Glow âmbar no canto direito */}
         <div
           aria-hidden
-          className="absolute -top-16 -right-16 w-64 h-64 rounded-full opacity-30 blur-3xl pointer-events-none"
+          className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'radial-gradient(circle, rgba(245, 158, 11, 0.5), transparent 70%)',
+              'radial-gradient(ellipse 70% 140% at 100% 50%, rgba(245, 158, 11, 0.18) 0%, rgba(245, 158, 11, 0.05) 35%, transparent 65%)',
           }}
         />
 
-        <div className="relative flex flex-col md:flex-row md:items-center gap-6">
-          {/* Prévia do arquivo */}
-          <div className="shrink-0 w-full md:w-48 h-28 md:h-32 rounded-xl bg-[#0d0d0f] border border-border flex items-center justify-center overflow-hidden relative group-hover:border-brand-500/40 transition-colors">
-            {/* Grid sutil de fundo */}
-            <div
-              aria-hidden
-              className="absolute inset-0 opacity-[0.06]"
-              style={{
-                backgroundImage:
-                  'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
-                backgroundSize: '16px 16px',
-              }}
-            />
-
-            <div className="text-center relative">
-              <FileCode
-                size={32}
-                className="text-brand-500 mx-auto mb-1.5 group-hover:scale-110 transition-transform duration-300"
-              />
-              <span className="text-[10px] text-text-muted font-mono tracking-wider">
-                {lesson.module_id} · {lesson.lesson_id}
-              </span>
-            </div>
+        <div className="relative p-6 md:p-7 flex flex-col md:flex-row md:items-center gap-6">
+          {/* Capa */}
+          <div className="shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <Play size={22} className="text-brand-500 fill-current ml-0.5" />
           </div>
 
           {/* Info */}
           <div className="flex-1 min-w-0">
-            <span className="inline-block text-xs font-semibold text-brand-500 uppercase tracking-wider mb-2">
-              Último arquivo
-            </span>
-            <h3 className="text-lg md:text-xl font-bold text-text-primary mb-2">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-[10px] font-mono text-brand-500 bg-brand-500/10 px-2 py-0.5 rounded-md border border-brand-500/20">
+                {lesson.module_id}-{getDisplayNumberPadded(lesson.lesson_id)}
+              </span>
+              <span className="text-xs text-text-muted">
+                {lesson.module_title}
+              </span>
+            </div>
+
+            <h3 className="text-lg md:text-xl font-bold text-text-primary mb-3 tracking-tight truncate">
               {lesson.lesson_title}
             </h3>
-            <p className="text-sm text-text-secondary mb-4 line-clamp-2">
-              {lesson.module_title}
-            </p>
 
-            {/* Progresso */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between text-xs text-text-muted mb-1.5">
-                <span>Progresso do módulo</span>
-                <span className="font-mono">{lesson.progress_percent}%</span>
-              </div>
-              <div className="h-1.5 rounded-full bg-surface-overlay overflow-hidden">
+            {/* Progresso inline */}
+            <div className="flex items-center gap-3 mb-3">
+              <div className="flex-1 h-1.5 rounded-full bg-white/[0.04] overflow-hidden max-w-xs">
                 <div
-                  className="h-full rounded-full bg-brand-500 transition-all duration-700"
+                  className="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-400"
                   style={{ width: `${lesson.progress_percent}%` }}
                 />
               </div>
+              <span className="text-xs font-mono text-brand-500 font-semibold">
+                {lesson.progress_percent}%
+              </span>
             </div>
 
             {/* Meta */}
-            <div className="flex flex-wrap items-center gap-4 text-xs text-text-muted mb-5">
+            <div className="flex flex-wrap items-center gap-4 text-xs text-text-muted">
               <span className="flex items-center gap-1.5">
                 <Clock size={12} />
-                {lesson.reading_time_minutes} min de leitura
+                {lesson.reading_time_minutes} min
               </span>
               <span className="flex items-center gap-1.5">
                 <BookOpen size={12} />
                 Leitura + exercício
               </span>
             </div>
+          </div>
 
-            <Button size="md" className="w-full sm:w-auto">
-              Continuar estudo
-              <ChevronRight size={18} />
-            </Button>
+          {/* CTA */}
+          <div className="shrink-0 flex items-center">
+            <div className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-500 text-[#0a0a0a] text-sm font-bold group-hover:bg-brand-400 group-hover:gap-3 transition-all duration-300 shadow-[0_0_30px_-8px_rgba(245,158,11,0.5)] w-full md:w-auto justify-center">
+              Continuar
+              <ChevronRight size={16} />
+            </div>
           </div>
         </div>
-      </div>
+      </Link>
     </section>
   );
 }

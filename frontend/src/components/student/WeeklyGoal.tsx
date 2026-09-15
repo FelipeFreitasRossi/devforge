@@ -1,4 +1,4 @@
-import { Target, TrendingUp } from 'lucide-react';
+import { Target, CheckCircle2, Flame } from 'lucide-react';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import type { DashboardOverview } from '../../services/api';
 
@@ -17,57 +17,106 @@ export function WeeklyGoal({ overview }: WeeklyGoalProps) {
   const [done, total] = progressStr.split('/').map(Number);
   const percent = total > 0 ? Math.round((done / total) * 100) : 0;
   const remaining = Math.max(total - done, 0);
+  const isComplete = remaining === 0 && done > 0;
+
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const daysLeft = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
 
   return (
     <section ref={containerRef} className="h-full">
       <div
         data-animate
-        className="relative h-full rounded-xl border border-accent-500/30 bg-gradient-to-br from-accent-500/10 via-surface-elevated to-surface-elevated p-5 md:p-6 overflow-hidden"
+        className={`relative h-full rounded-2xl border bg-[#0c0c0e] overflow-hidden p-6 ${
+          isComplete ? 'border-emerald-500/25' : 'border-border'
+        }`}
       >
+        {/* Glow sutil */}
         <div
           aria-hidden
-          className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full opacity-20 blur-3xl pointer-events-none"
+          className="absolute inset-0 pointer-events-none"
           style={{
-            background:
-              'radial-gradient(circle, rgba(59, 130, 246, 0.5), transparent 70%)',
+            background: isComplete
+              ? 'radial-gradient(ellipse 90% 120% at 100% 100%, rgba(16, 185, 129, 0.14) 0%, transparent 65%)'
+              : 'radial-gradient(ellipse 90% 120% at 100% 100%, rgba(139, 92, 246, 0.12) 0%, transparent 65%)',
           }}
         />
 
-        <div className="relative flex items-start justify-between gap-4 mb-5">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Target size={16} className="text-accent-500" />
-              <span className="text-xs font-semibold text-accent-500 uppercase tracking-wider">
-                Meta semanal
-              </span>
+        <div className="relative flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-start justify-between gap-4 mb-6">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                {isComplete ? (
+                  <CheckCircle2 size={12} className="text-emerald-500" />
+                ) : (
+                  <Target size={12} className="text-violet-500" />
+                )}
+                <span
+                  className={`text-[10px] font-semibold uppercase tracking-widest ${
+                    isComplete ? 'text-emerald-500' : 'text-violet-400'
+                  }`}
+                >
+                  Meta semanal
+                </span>
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="text-3xl font-bold text-text-primary leading-none tracking-tight">
+                  {done}
+                </span>
+                <span className="text-sm text-text-muted">/{total}</span>
+              </div>
             </div>
-            <p className="text-text-secondary text-sm">
-              {remaining === 0
-                ? 'Meta batida! Você é fera.'
-                : `Faltam ${remaining} ${
-                    remaining === 1 ? 'aula' : 'aulas'
-                  } para bater a meta.`}
+
+            {isComplete ? (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30">
+                <Flame size={11} className="text-emerald-500" />
+                <span className="text-[11px] font-bold text-emerald-500 font-mono">
+                  OK
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-500/10 border border-violet-500/25">
+                <span className="text-[11px] font-bold text-violet-400 font-mono">
+                  {percent}%
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Barra */}
+          <div className="mb-4">
+            <div className="h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-1000 ${
+                  isComplete
+                    ? 'bg-gradient-to-r from-emerald-500 to-emerald-400'
+                    : 'bg-gradient-to-r from-violet-500 to-accent-500'
+                }`}
+                style={{ width: `${percent}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Mensagem */}
+          <div className="mt-auto">
+            <p
+              className={`text-sm leading-relaxed ${
+                isComplete ? 'text-emerald-400' : 'text-text-secondary'
+              }`}
+            >
+              {isComplete
+                ? 'Meta batida. Continue assim.'
+                : remaining === 1
+                ? 'Falta apenas 1 aula!'
+                : `Faltam ${remaining} aulas.`}
             </p>
-          </div>
 
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-500/15 border border-accent-500/30 shrink-0">
-            <TrendingUp size={12} className="text-accent-500" />
-            <span className="text-xs font-bold text-accent-500 font-mono">
-              {percent}%
-            </span>
-          </div>
-        </div>
-
-        <div className="relative">
-          <div className="flex items-center justify-between text-xs text-text-muted mb-2">
-            <span>Progresso</span>
-            <span className="font-mono">{progressStr}</span>
-          </div>
-          <div className="h-2 rounded-full bg-surface-overlay overflow-hidden">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-accent-500 to-brand-500 transition-all duration-1000"
-              style={{ width: `${percent}%` }}
-            />
+            {!isComplete && daysLeft > 0 && (
+              <p className="text-xs text-text-muted mt-2">
+                {daysLeft} {daysLeft === 1 ? 'dia restante' : 'dias restantes'}
+              </p>
+            )}
           </div>
         </div>
       </div>

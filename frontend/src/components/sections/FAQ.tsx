@@ -31,7 +31,7 @@ const faqs = [
   {
     question: 'E se eu não gostar?',
     answer:
-      'Você tem 7 dias de garantia incondicional. Se não for para você, basta solicitar o reembolso e devolvemos 100% do valor.',
+      'Você tem 2 dias de garantia incondicional. Se não for para você, basta solicitar o reembolso pelo nosso e-mail e devolvemos 100% do valor pago.',
   },
 ];
 

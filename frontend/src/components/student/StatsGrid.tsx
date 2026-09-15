@@ -1,4 +1,4 @@
-import { BookOpen, Trophy, Clock, Target, TrendingUp } from 'lucide-react';
+import { BookOpen, Trophy, Clock, Target } from 'lucide-react';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import { useCountUp } from '../../hooks/useCountUp';
 import type { DashboardOverview } from '../../services/api';
@@ -7,79 +7,60 @@ interface StatsGridProps {
   overview: DashboardOverview | null;
 }
 
+type Accent = 'amber' | 'emerald' | 'blue' | 'violet';
+
+const CONFIG: Record<Accent, { rgb: string; icon: string; border: string }> = {
+  amber: { rgb: '245, 158, 11', icon: 'text-brand-500', border: 'border-brand-500/25' },
+  emerald: { rgb: '16, 185, 129', icon: 'text-emerald-500', border: 'border-emerald-500/25' },
+  blue: { rgb: '59, 130, 246', icon: 'text-accent-500', border: 'border-accent-500/25' },
+  violet: { rgb: '139, 92, 246', icon: 'text-violet-500', border: 'border-violet-500/25' },
+};
+
 function StatCard({
   icon: Icon,
   label,
   value,
-  suffix = '',
   accent,
-  trend,
 }: {
   icon: typeof BookOpen;
   label: string;
-  value: number;
-  suffix?: string;
-  accent: 'brand' | 'accent';
-  trend?: string;
+  value: string;
+  accent: Accent;
 }) {
-  const { value: animated, elementRef } = useCountUp(value);
-  const isBrand = accent === 'brand';
+  const cfg = CONFIG[accent];
+  const numValue = parseFloat(value.replace(/[^\d.]/g, '')) || 0;
+  const suffix = value.replace(/[\d.]/g, '');
+  const { value: animated, elementRef } = useCountUp(numValue);
 
   return (
     <div
       ref={elementRef as React.RefObject<HTMLDivElement>}
       data-animate
-      className={`group relative p-5 md:p-6 rounded-2xl border bg-surface-elevated overflow-hidden transition-all duration-500 hover:-translate-y-1 ${
-        isBrand
-          ? 'border-brand-500/20 hover:border-brand-500/50'
-          : 'border-accent-500/20 hover:border-accent-500/50'
-      }`}
+      className={`group relative p-5 rounded-2xl border ${cfg.border} bg-[#0c0c0e] overflow-hidden transition-all duration-300 hover:-translate-y-0.5`}
     >
-      {/* Glow no hover */}
+      {/* Glow sutil no canto direito */}
       <div
         aria-hidden
-        className="absolute -top-16 -right-16 w-40 h-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-3xl pointer-events-none"
+        className="absolute inset-0 pointer-events-none opacity-80 group-hover:opacity-100 transition-opacity"
         style={{
-          background: isBrand
-            ? 'radial-gradient(circle, rgba(245, 158, 11, 0.35), transparent 70%)'
-            : 'radial-gradient(circle, rgba(59, 130, 246, 0.35), transparent 70%)',
+          background: `radial-gradient(ellipse 90% 100% at 100% 0%, rgba(${cfg.rgb}, 0.15) 0%, rgba(${cfg.rgb}, 0.05) 35%, transparent 70%)`,
         }}
       />
 
       <div className="relative">
         <div className="flex items-start justify-between mb-4">
-          <div
-            className={`w-10 h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center transition-all duration-300 ${
-              isBrand
-                ? 'bg-brand-500/10 border border-brand-500/30 group-hover:bg-brand-500/20 group-hover:scale-110'
-                : 'bg-accent-500/10 border border-accent-500/30 group-hover:bg-accent-500/20 group-hover:scale-110'
-            }`}
-          >
-            <Icon
-              size={20}
-              className={isBrand ? 'text-brand-500' : 'text-accent-500'}
-            />
+          <div className={`w-10 h-10 rounded-xl bg-white/[0.03] border ${cfg.border} flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
+            <Icon size={18} className={cfg.icon} />
           </div>
-
-          {trend && (
-            <span
-              className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                isBrand
-                  ? 'bg-brand-500/10 text-brand-400'
-                  : 'bg-accent-500/10 text-accent-300'
-              }`}
-            >
-              <TrendingUp size={10} />
-              {trend}
-            </span>
-          )}
         </div>
 
-        <div className="text-2xl md:text-3xl font-bold text-text-primary leading-none mb-1.5 tracking-tight">
+        <div className="text-2xl md:text-3xl font-bold text-text-primary leading-none mb-2 tracking-tight">
           {animated}
           {suffix}
         </div>
-        <div className="text-xs md:text-sm text-text-muted">{label}</div>
+        <div className="text-[11px] md:text-xs text-text-muted uppercase tracking-wider font-medium">
+          {label}
+        </div>
       </div>
     </div>
   );
@@ -87,47 +68,41 @@ function StatCard({
 
 export function StatsGrid({ overview }: StatsGridProps) {
   const containerRef = useScrollAnimation<HTMLElement>({
-    y: 40,
-    duration: 0.8,
-    stagger: 0.1,
+    y: 20,
+    duration: 0.6,
+    stagger: 0.08,
   });
 
   const stats = [
     {
       icon: BookOpen,
       label: 'Módulos ativos',
-      value: overview?.stats.active_modules ?? 0,
-      accent: 'brand' as const,
+      value: String(overview?.stats.active_modules ?? 0),
+      accent: 'amber' as Accent,
     },
     {
       icon: Trophy,
-      label: 'Módulos concluídos',
-      value: overview?.stats.completed_modules ?? 0,
-      accent: 'accent' as const,
+      label: 'Concluídos',
+      value: String(overview?.stats.completed_modules ?? 0),
+      accent: 'emerald' as Accent,
     },
     {
       icon: Clock,
-      label: 'Horas de estudo',
-      value: Math.round(overview?.stats.study_hours ?? 0),
-      suffix: 'h',
-      accent: 'brand' as const,
+      label: 'Horas estudadas',
+      value: `${Math.round(overview?.stats.study_hours ?? 0)}h`,
+      accent: 'blue' as Accent,
     },
     {
       icon: Target,
       label: 'Meta semanal',
-      value: Number(
-        overview?.stats.weekly_goal_progress?.split('/')[0] ?? 0
-      ),
-      suffix: `/${
-        overview?.stats.weekly_goal_progress?.split('/')[1] ?? 5
-      }`,
-      accent: 'accent' as const,
+      value: overview?.stats.weekly_goal_progress ?? '0/5',
+      accent: 'violet' as Accent,
     },
   ];
 
   return (
     <section ref={containerRef}>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {stats.map((stat) => (
           <StatCard key={stat.label} {...stat} />
         ))}

@@ -29,7 +29,7 @@ export function Achievements({ achievements }: AchievementsProps) {
       <div className="flex items-center justify-between mb-5">
         <h2
           data-animate
-          className="text-fluid-xl font-bold text-text-primary tracking-tight"
+          className="text-lg md:text-xl font-bold text-text-primary tracking-tight"
         >
           Conquistas
         </h2>
@@ -45,16 +45,21 @@ export function Achievements({ achievements }: AchievementsProps) {
         {achievements.map((achievement) => {
           const Icon = ICON_MAP[achievement.id] || Award;
           const isBrand = achievement.accent === 'brand';
+          const rgb = achievement.unlocked
+            ? isBrand
+              ? '245, 158, 11'
+              : '59, 130, 246'
+            : '113, 113, 122';
 
           return (
             <div
               key={achievement.id}
               data-animate
-              className={`group relative p-5 rounded-2xl border text-center transition-all duration-500 overflow-hidden ${
+              className={`group relative p-5 rounded-2xl border text-center overflow-hidden transition-all duration-500 ${
                 achievement.unlocked
                   ? isBrand
-                    ? 'border-brand-500/40 bg-gradient-to-br from-brand-500/10 to-surface-elevated hover:border-brand-500/70 hover:-translate-y-1 hover:shadow-glow'
-                    : 'border-accent-500/40 bg-gradient-to-br from-accent-500/10 to-surface-elevated hover:border-accent-500/70 hover:-translate-y-1'
+                    ? 'border-brand-500/40 bg-surface-elevated hover:-translate-y-1'
+                    : 'border-accent-500/40 bg-surface-elevated hover:-translate-y-1'
                   : 'border-border bg-surface-elevated/40'
               }`}
             >
@@ -62,11 +67,17 @@ export function Achievements({ achievements }: AchievementsProps) {
               {achievement.unlocked && (
                 <div
                   aria-hidden
-                  className="absolute -top-12 -right-12 w-32 h-32 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl pointer-events-none"
+                  className="absolute inset-0 pointer-events-none opacity-70 group-hover:opacity-100 transition-opacity duration-500"
                   style={{
-                    background: isBrand
-                      ? 'radial-gradient(circle, rgba(245, 158, 11, 0.4), transparent 70%)'
-                      : 'radial-gradient(circle, rgba(59, 130, 246, 0.4), transparent 70%)',
+                    background: `
+                      radial-gradient(
+                        ellipse 100% 100% at 50% 0%,
+                        rgba(${rgb}, 0.3) 0%,
+                        rgba(${rgb}, 0.15) 30%,
+                        rgba(${rgb}, 0.05) 60%,
+                        transparent 85%
+                      )
+                    `,
                   }}
                 />
               )}
@@ -84,9 +95,7 @@ export function Achievements({ achievements }: AchievementsProps) {
                   {achievement.unlocked ? (
                     <Icon
                       size={24}
-                      className={
-                        isBrand ? 'text-brand-500' : 'text-accent-500'
-                      }
+                      className={isBrand ? 'text-brand-500' : 'text-accent-500'}
                     />
                   ) : (
                     <Lock size={18} className="text-text-muted" />

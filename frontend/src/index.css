@@ -254,3 +254,135 @@ section {
     transform: none;
   }
 }
+
+/* ============ ANIMAÇÕES DO MENU MOBILE ============ */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* ============ MELHORAR SCROLL NO MOBILE ============ */
+@media (max-width: 640px) {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Área mínima de toque */
+  button,
+  a {
+    min-height: 40px;
+  }
+}
+
+/* ============ ESCONDE SCROLLBAR (mantém funcional) ============ */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ============ ANIMAÇÕES DE ENTRADA/SAÍDA (drawers) ============ */
+
+/* Fade */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out;
+}
+
+.animate-fade-out {
+  animation: fade-out 0.25s ease-in forwards;
+}
+
+/* Slide da DIREITA (menu do header) */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-right {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.animate-slide-out-right {
+  animation: slide-out-right 0.28s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* Slide da ESQUERDA (Ver Trilha) */
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.animate-slide-out-left {
+  animation: slide-out-left 0.6s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}

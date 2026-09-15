@@ -55,34 +55,22 @@ def _find_exercise(lesson: dict, exercise_id: str | None) -> dict:
     raise HTTPException(status_code=404, detail="Exercício não encontrado")
 
 
-@router.get("/{lesson_id}")
-async def get_lesson_detail(lesson_id: str, user=Depends(get_current_user)):
-    lesson = get_lesson(lesson_id)
-    if not lesson:
-        raise HTTPException(status_code=404, detail="Lição não encontrada")
+@router.get("/search-index")
+async def search_index(user=Depends(get_current_user)):
+    from app.analytics import CURRICULUM
 
-    user_id = str(user["_id"])
-    prev_id, next_id = get_adjacent_lesson_ids(lesson_id)
+    lessons = []
+    for module in CURRICULUM:
+        for lesson in module["lessons"]:
+            lessons.append({
+                "id": lesson["id"],
+                "title": lesson["title"],
+                "module_id": module["id"],
+                "module_title": module["title"],
+                "reading_time_minutes": lesson["reading_time_minutes"],
+            })
 
-    already_completed = progress_collection.find_one({
-        "user_id": user_id,
-        "lesson_id": lesson_id,
-        "completed": True,
-    }) is not None
-
-    attempts = lesson_submissions_collection.count_documents({
-        "user_id": user_id,
-        "lesson_id": lesson_id,
-    })
-
-    return {
-        "lesson": lesson,
-        "already_completed": already_completed,
-        "attempts": attempts,
-        "prev_lesson_id": prev_id,
-        "next_lesson_id": next_id,
-        "sidebar": get_lesson_sidebar(user_id, lesson_id),
-    }
+    return {"lessons": lessons}
 
 
 @router.post("/{lesson_id}/submit")

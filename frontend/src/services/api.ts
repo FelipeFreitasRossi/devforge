@@ -48,6 +48,7 @@ async function request<T>(
   return data as T;
 }
 
+// ============ AUTH + PAYMENTS ============
 export const api = {
   register: (name: string, email: string, password: string) =>
     request('/auth/register', {
@@ -83,6 +84,7 @@ export const api = {
     request(`/payments/status/${orderId}`),
 };
 
+// ============ DASHBOARD ============
 export interface DashboardOverview {
   user: { name: string; email: string };
   stats: {
@@ -267,4 +269,64 @@ export const lessonApi = {
         time_spent_seconds: timeSpentSeconds,
       }),
     }),
+};
+
+// ============ PROFILE ============
+export interface ProfileUser {
+  id: string;
+  name: string;
+  email: string;
+  created_at: string | null;
+  paid: boolean;
+}
+
+export interface ProfileStats {
+  active_modules: number;
+  completed_modules: number;
+  study_hours: number;
+  streak_current: number;
+  streak_longest: number;
+  achievements_unlocked: number;
+  achievements_total: number;
+}
+
+export interface ProfileResponse {
+  user: ProfileUser;
+  stats: ProfileStats;
+}
+
+export const profileApi = {
+  getProfile: () => request<ProfileResponse>('/profile'),
+
+  updateName: (name: string) =>
+    request<{ success: boolean; user: ProfileUser }>('/profile', {
+      method: 'PUT',
+      body: JSON.stringify({ name }),
+    }),
+
+  changePassword: (currentPassword: string, newPassword: string) =>
+    request<{ success: boolean; message: string }>('/profile/password', {
+      method: 'PUT',
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    }),
+};
+
+// ============ SEARCH ============
+export interface SearchLesson {
+  id: string;
+  title: string;
+  module_id: string;
+  module_title: string;
+  reading_time_minutes: number;
+}
+
+export interface SearchIndexResponse {
+  lessons: SearchLesson[];
+}
+
+export const searchApi = {
+  getIndex: () => request<SearchIndexResponse>('/lessons/search-index'),
 };
