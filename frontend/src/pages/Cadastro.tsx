@@ -45,6 +45,7 @@ export function Cadastro() {
     <AuthLayout
       title="Crie sua conta"
       subtitle="Comece sua jornada como dev agora"
+      mascotSide="left" // 👈 essa linha estava faltando — é ela que manda o mascote pra esquerda e espelha
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         <Input

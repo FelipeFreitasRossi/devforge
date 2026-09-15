@@ -87,47 +87,28 @@ function CTASection() {
 
   useGSAP(
     () => {
-      if (
-        !containerRef.current ||
-        !glowRef.current ||
-        !discordIconRef.current
-      )
-        return;
+      if (!containerRef.current || !glowRef.current || !discordIconRef.current) return;
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
-          start: 'top 80%',
+          start: 'top 85%',
           once: true,
         },
       });
 
-      // 1. Gradiente azul surge, movendo da direita para o seu lugar
       tl.fromTo(
         glowRef.current,
         { opacity: 0, x: 80 },
         { opacity: 1, x: 0, duration: 1.6, ease: 'power3.out' }
       );
 
-      // 2. Ícone do Discord entra deslizando da direita + scale suave
       tl.fromTo(
         discordIconRef.current,
-        {
-          opacity: 0,
-          scale: 0.8,
-          x: 40,
-        },
-        {
-          opacity: 1,
-          scale: 1,
-          x: 0,
-          duration: 1.6,
-          ease: 'power3.out',
-        },
+        { opacity: 0, scale: 0.8, x: 40 },
+        { opacity: 1, scale: 1, x: 0, duration: 1.6, ease: 'power3.out' },
         '-=1.3'
       );
-
-      // ✅ Sem animação contínua — o ícone fica FIXO depois de entrar
     },
     { scope: containerRef }
   );
@@ -135,9 +116,8 @@ function CTASection() {
   return (
     <div
       ref={containerRef}
-      className="relative rounded-2xl border border-brand-500/30 bg-gradient-to-br from-brand-500/10 via-surface-elevated to-surface-elevated overflow-hidden p-8 md:p-12"
+      className="relative rounded-2xl border border-brand-500/30 bg-gradient-to-br from-brand-500/10 via-surface-elevated to-surface-elevated overflow-hidden p-6 sm:p-8 md:p-12"
     >
-      {/* ===== EFEITO AZUL ===== */}
       <div
         ref={glowRef}
         aria-hidden
@@ -157,62 +137,56 @@ function CTASection() {
         }}
       />
 
-      {/* Ícone gigante do Discord — METADE VISÍVEL, METADE CORTADA NA BORDA */}
       <div
         ref={discordIconRef}
         aria-hidden
-        className="absolute top-1/2 pointer-events-none opacity-0 select-none"
+        className="absolute top-1/2 pointer-events-none opacity-0 select-none hidden sm:block"
         style={{
-          // Metade do ícone (140px = metade de 280px) fica para dentro
-          right: '-140px',
+          right: '-100px',
           transform: 'translateY(-50%)',
-          color: 'rgba(220, 228, 255, 0.55)',
+          color: 'rgba(220, 228, 255, 0.35)',
           filter: 'drop-shadow(0 0 40px rgba(88, 101, 242, 0.6))',
         }}
       >
-        <DiscordIcon size={280} />
+        <DiscordIcon size={240} />
       </div>
 
-      {/* Glow âmbar sutil no topo */}
       <div
         aria-hidden
-        className="absolute -top-32 -right-32 w-96 h-96 rounded-full opacity-20 blur-3xl pointer-events-none"
+        className="absolute -top-32 -right-32 w-64 h-64 sm:w-96 sm:h-96 rounded-full opacity-20 blur-3xl pointer-events-none"
         style={{
           background:
             'radial-gradient(circle, rgba(245, 158, 11, 0.4), transparent 70%)',
         }}
       />
 
-      {/* ===== CONTEÚDO ===== */}
-      <div className="relative flex flex-col md:flex-row items-center gap-8">
+      <div className="relative flex flex-col md:flex-row items-center gap-6 md:gap-8">
         <div className="flex-1 text-center md:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-500/30 bg-brand-500/5 mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-500/30 bg-brand-500/5 mb-3 md:mb-4">
             <Sparkles size={12} className="text-brand-500" />
-            <span className="text-xs text-brand-300 font-medium">
+            <span className="text-[11px] md:text-xs text-brand-300 font-medium">
               Sua jornada continua
             </span>
           </div>
 
-          <h3 className="text-2xl md:text-3xl font-bold text-text-primary tracking-tight mb-3 leading-tight">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-primary tracking-tight mb-3 leading-tight">
             Continue evoluindo como dev.
             <br />
-            <span className="text-brand-500">
-              Você está no caminho certo.
-            </span>
+            <span className="text-brand-500">Você está no caminho certo.</span>
           </h3>
 
-          <p className="text-text-secondary text-sm md:text-base max-w-xl leading-relaxed">
+          <p className="text-text-secondary text-xs sm:text-sm md:text-base max-w-xl leading-relaxed">
             Cada linha de código te leva mais perto da sua primeira vaga.
             Continue firme — o resultado vem com consistência.
           </p>
         </div>
 
-        <div className="shrink-0 flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-auto">
-          <Link to="/minha-area" className="w-full sm:w-auto md:w-full">
-            <Button size="lg" className="w-full group">
+        <div className="shrink-0 flex flex-col gap-2.5 md:gap-3 w-full md:w-auto">
+          <Link to="/minha-area" className="w-full md:w-full">
+            <Button size="lg" className="w-full group text-sm md:text-base">
               Continuar estudando
               <ArrowRight
-                size={18}
+                size={16}
                 className="group-hover:translate-x-1 transition-transform"
               />
             </Button>
@@ -222,9 +196,9 @@ function CTASection() {
             href={SOCIAL_LINKS.discord}
             target="_blank"
             rel="noopener noreferrer"
-            className="group w-full sm:w-auto md:w-full inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-lg border border-[#5865F2]/40 bg-[#5865F2]/10 hover:border-[#5865F2]/70 hover:bg-[#5865F2]/20 backdrop-blur-sm transition-all duration-300 text-base font-medium text-white"
+            className="group w-full inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-lg border border-[#5865F2]/40 bg-[#5865F2]/10 hover:border-[#5865F2]/70 hover:bg-[#5865F2]/20 backdrop-blur-sm transition-all duration-300 text-sm md:text-base font-medium text-white"
           >
-            <DiscordIcon size={20} />
+            <DiscordIcon size={18} />
             Entrar na comunidade
           </a>
         </div>
@@ -310,7 +284,7 @@ function HelpModal({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div
         ref={overlayRef}
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -319,7 +293,7 @@ function HelpModal({
 
       <div
         ref={modalRef}
-        className="relative w-full max-w-lg rounded-2xl border border-border bg-surface-elevated p-6 md:p-8 overflow-hidden"
+        className="relative w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl border-t sm:border border-border bg-surface-elevated p-5 sm:p-6 md:p-8 overflow-hidden max-h-[90vh] overflow-y-auto"
       >
         <div
           aria-hidden
@@ -330,20 +304,22 @@ function HelpModal({
           }}
         />
 
-        <div className="relative flex items-start justify-between gap-4 mb-6">
+        {/* Handle bar mobile */}
+        <div className="sm:hidden w-12 h-1 rounded-full bg-border mx-auto mb-4" />
+
+        <div className="relative flex items-start justify-between gap-4 mb-5">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-500/30 bg-brand-500/5 mb-3">
               <LifeBuoy size={12} className="text-brand-500" />
-              <span className="text-xs text-brand-300 font-medium">
+              <span className="text-[11px] text-brand-300 font-medium">
                 Central de ajuda
               </span>
             </div>
-            <h3 className="text-xl md:text-2xl font-bold text-text-primary tracking-tight">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-text-primary tracking-tight">
               Deseja tirar dúvida com qual servidor?
             </h3>
-            <p className="text-text-secondary text-sm mt-2">
-              Escolha o canal que preferir. Responderemos o mais rápido
-              possível.
+            <p className="text-text-secondary text-xs sm:text-sm mt-2">
+              Escolha o canal que preferir.
             </p>
           </div>
 
@@ -356,7 +332,7 @@ function HelpModal({
           </button>
         </div>
 
-        <div ref={cardsRef} className="relative space-y-3">
+        <div ref={cardsRef} className="relative space-y-2.5 sm:space-y-3">
           {channels.map((channel) => {
             const Icon = channel.icon;
             return (
@@ -366,24 +342,24 @@ function HelpModal({
                 href={channel.href}
                 target={channel.id === 'email' ? undefined : '_blank'}
                 rel={channel.id === 'email' ? undefined : 'noopener noreferrer'}
-                className="group flex items-center gap-4 p-4 rounded-xl border border-border bg-surface hover:border-border-strong hover:-translate-y-0.5 transition-all duration-300"
+                className="group flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-xl border border-border bg-surface hover:border-border-strong hover:-translate-y-0.5 transition-all duration-300"
               >
                 <div
-                  className="shrink-0 w-11 h-11 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
+                  className="shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
                   style={{
                     background: `${channel.color}15`,
                     border: `1px solid ${channel.color}40`,
                     color: channel.color,
                   }}
                 >
-                  <Icon size={20} />
+                  <Icon size={18} />
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-text-primary">
                     {channel.label}
                   </p>
-                  <p className="text-xs text-text-muted mt-0.5">
+                  <p className="text-xs text-text-muted mt-0.5 truncate">
                     {channel.description}
                   </p>
                 </div>
@@ -408,69 +384,72 @@ export function StudentFooter() {
   return (
     <>
       <footer className="border-t border-border bg-black mt-12">
-        {/* CTA */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        {/* ===== CTA ===== */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 md:py-16">
           <CTASection />
         </div>
 
-        {/* LINKS */}
+        {/* ===== LINKS ===== */}
         <div className="border-t border-border">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10">
-              <div className="sm:col-span-2 lg:col-span-2">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-10">
+              {/* Marca — full width no mobile */}
+              <div className="col-span-2 lg:col-span-2">
                 <Link
                   to="/minha-area"
-                  className="flex items-center gap-2.5 group shrink-0 mb-4"
+                  className="flex items-center gap-2.5 group shrink-0 mb-3 sm:mb-4"
                 >
                   <img
                     src={LOGO_URL}
                     alt="Devstack"
-                    className="h-9 w-auto object-contain transition-transform group-hover:scale-105"
+                    className="h-8 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105"
                   />
-                  <span className="text-xl font-bold text-text-primary tracking-tight">
+                  <span className="text-lg sm:text-xl font-bold text-text-primary tracking-tight">
                     Dev<span className="text-brand-500">stack</span>
                   </span>
                 </Link>
 
-                <p className="text-text-secondary text-sm leading-relaxed mb-6 max-w-sm">
+                <p className="text-text-secondary text-xs sm:text-sm leading-relaxed mb-4 sm:mb-6 max-w-sm">
                   A plataforma definitiva para quem quer aprender programação
                   de verdade. Pague uma vez, acesse para sempre.
                 </p>
 
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-surface-elevated">
-                    <Shield size={14} className="text-accent-500" />
-                    <span className="text-xs text-text-secondary font-medium">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg border border-border bg-surface-elevated">
+                    <Shield size={12} className="text-accent-500" />
+                    <span className="text-[10px] sm:text-xs text-text-secondary font-medium">
                       Compra segura
                     </span>
                   </div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-surface-elevated">
-                    <Sparkles size={14} className="text-brand-500" />
-                    <span className="text-xs text-text-secondary font-medium">
+                  <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg border border-border bg-surface-elevated">
+                    <Sparkles size={12} className="text-brand-500" />
+                    <span className="text-[10px] sm:text-xs text-text-secondary font-medium">
                       Acesso vitalício
                     </span>
                   </div>
                 </div>
               </div>
 
+              {/* Plataforma */}
               <div>
-                <h4 className="text-xs font-bold text-text-primary uppercase tracking-wider mb-4">
+                <h4 className="text-[10px] sm:text-xs font-bold text-text-primary uppercase tracking-wider mb-3 sm:mb-4">
                   Plataforma
                 </h4>
-                <ul className="space-y-3">
+                <ul className="space-y-2.5 sm:space-y-3">
                   <li>
                     <Link
                       to="/minha-area"
-                      className="text-sm text-text-secondary hover:text-brand-500 transition-colors inline-flex items-center gap-1.5"
+                      className="text-xs sm:text-sm text-text-secondary hover:text-brand-500 transition-colors inline-flex items-center gap-1.5"
                     >
-                      <BookOpen size={14} />
+                      <BookOpen size={12} className="sm:hidden" />
+                      <BookOpen size={14} className="hidden sm:block" />
                       Minha área
                     </Link>
                   </li>
                   <li>
                     <Link
                       to="/perfil"
-                      className="text-sm text-text-secondary hover:text-brand-500 transition-colors"
+                      className="text-xs sm:text-sm text-text-secondary hover:text-brand-500 transition-colors"
                     >
                       Meu perfil
                     </Link>
@@ -478,7 +457,7 @@ export function StudentFooter() {
                   <li>
                     <Link
                       to="/certificados"
-                      className="text-sm text-text-secondary hover:text-brand-500 transition-colors"
+                      className="text-xs sm:text-sm text-text-secondary hover:text-brand-500 transition-colors"
                     >
                       Certificados
                     </Link>
@@ -486,7 +465,7 @@ export function StudentFooter() {
                   <li>
                     <Link
                       to="/conquistas"
-                      className="text-sm text-text-secondary hover:text-brand-500 transition-colors"
+                      className="text-xs sm:text-sm text-text-secondary hover:text-brand-500 transition-colors"
                     >
                       Conquistas
                     </Link>
@@ -494,52 +473,57 @@ export function StudentFooter() {
                 </ul>
               </div>
 
+              {/* Suporte */}
               <div>
-                <h4 className="text-xs font-bold text-text-primary uppercase tracking-wider mb-4">
+                <h4 className="text-[10px] sm:text-xs font-bold text-text-primary uppercase tracking-wider mb-3 sm:mb-4">
                   Suporte
                 </h4>
-                <ul className="space-y-3">
+                <ul className="space-y-2.5 sm:space-y-3">
                   <li>
                     <a
                       href={SOCIAL_LINKS.discord}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-text-secondary hover:text-brand-500 transition-colors inline-flex items-center gap-1.5"
+                      className="text-xs sm:text-sm text-text-secondary hover:text-brand-500 transition-colors inline-flex items-center gap-1.5"
                     >
-                      <LifeBuoy size={14} />
+                      <LifeBuoy size={12} className="sm:hidden" />
+                      <LifeBuoy size={14} className="hidden sm:block" />
                       Discord
                     </a>
                   </li>
                   <li>
                     <a
                       href={`mailto:${EMAIL}`}
-                      className="text-sm text-text-secondary hover:text-brand-500 transition-colors inline-flex items-center gap-1.5"
+                      className="text-xs sm:text-sm text-text-secondary hover:text-brand-500 transition-colors inline-flex items-center gap-1.5"
                     >
-                      <Mail size={14} />
+                      <Mail size={12} className="sm:hidden" />
+                      <Mail size={14} className="hidden sm:block" />
                       E-mail
                     </a>
                   </li>
                   <li>
                     <button
                       onClick={() => setHelpOpen(true)}
-                      className="text-sm text-text-secondary hover:text-brand-500 transition-colors inline-flex items-center gap-1.5"
+                      className="text-xs sm:text-sm text-text-secondary hover:text-brand-500 transition-colors inline-flex items-center gap-1.5"
                     >
-                      <LifeBuoy size={14} />
-                      Central de ajuda
+                      <LifeBuoy size={12} className="sm:hidden" />
+                      <LifeBuoy size={14} className="hidden sm:block" />
+                      Ajuda
                     </button>
                   </li>
                 </ul>
               </div>
 
-              <div>
-                <h4 className="text-xs font-bold text-text-primary uppercase tracking-wider mb-4">
+              {/* Legal */}
+              <div className="col-span-2 sm:col-span-1">
+                <h4 className="text-[10px] sm:text-xs font-bold text-text-primary uppercase tracking-wider mb-3 sm:mb-4">
                   Legal
                 </h4>
-                <ul className="space-y-3">
+                <ul className="space-y-2.5 sm:space-y-3">
                   <li>
                     <Link
                       to="/termos"
-                      className="text-sm text-text-secondary hover:text-brand-500 transition-colors"
+                      className="text-xs sm:text-sm text-text-secondary hover:text-brand-500 transition-colors"
                     >
                       Termos de uso
                     </Link>
@@ -547,7 +531,7 @@ export function StudentFooter() {
                   <li>
                     <Link
                       to="/privacidade"
-                      className="text-sm text-text-secondary hover:text-brand-500 transition-colors"
+                      className="text-xs sm:text-sm text-text-secondary hover:text-brand-500 transition-colors"
                     >
                       Privacidade
                     </Link>
@@ -555,7 +539,7 @@ export function StudentFooter() {
                   <li>
                     <Link
                       to="/reembolso"
-                      className="text-sm text-text-secondary hover:text-brand-500 transition-colors"
+                      className="text-xs sm:text-sm text-text-secondary hover:text-brand-500 transition-colors"
                     >
                       Reembolso
                     </Link>
@@ -566,34 +550,36 @@ export function StudentFooter() {
           </div>
         </div>
 
-        {/* REDES + COPYRIGHT */}
+        {/* ===== REDES + COPYRIGHT ===== */}
         <div className="border-t border-border">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-              <div className="text-center lg:text-left order-2 lg:order-1">
-                <p className="text-xs text-text-muted">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+            <div className="flex flex-col gap-5 sm:gap-6">
+              {/* Copyright */}
+              <div className="text-center order-2 sm:order-1">
+                <p className="text-[10px] sm:text-xs text-text-muted">
                   © {new Date().getFullYear()} Devstack. Todos os direitos
                   reservados.
                 </p>
-                <p className="text-xs text-text-muted mt-1">
+                <p className="text-[10px] sm:text-xs text-text-muted mt-1">
                   Feito com dedicação para devs de verdade.
                 </p>
               </div>
 
-              <div className="flex flex-col items-center lg:items-end gap-3 order-1 lg:order-2">
-                <span className="text-xs text-text-muted uppercase tracking-wider font-medium">
+              {/* Redes sociais */}
+              <div className="flex flex-col items-center gap-3 order-1 sm:order-2">
+                <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest font-medium">
                   Siga a Devstack
                 </span>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center justify-center gap-2">
                   <a
                     href={SOCIAL_LINKS.whatsapp}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="WhatsApp"
-                    className="p-2.5 rounded-lg border border-border bg-surface-elevated text-text-secondary hover:text-[#25D366] hover:border-[#25D366]/40 hover:bg-[#25D366]/5 hover:-translate-y-0.5 transition-all duration-200"
+                    className="p-2 sm:p-2.5 rounded-lg border border-border bg-surface-elevated text-text-secondary hover:text-[#25D366] hover:border-[#25D366]/40 hover:bg-[#25D366]/5 hover:-translate-y-0.5 transition-all duration-200"
                   >
-                    <WhatsAppIcon size={18} />
+                    <WhatsAppIcon size={16} />
                   </a>
 
                   <a
@@ -601,9 +587,9 @@ export function StudentFooter() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Instagram"
-                    className="p-2.5 rounded-lg border border-border bg-surface-elevated text-text-secondary hover:text-[#E4405F] hover:border-[#E4405F]/40 hover:bg-[#E4405F]/5 hover:-translate-y-0.5 transition-all duration-200"
+                    className="p-2 sm:p-2.5 rounded-lg border border-border bg-surface-elevated text-text-secondary hover:text-[#E4405F] hover:border-[#E4405F]/40 hover:bg-[#E4405F]/5 hover:-translate-y-0.5 transition-all duration-200"
                   >
-                    <InstagramIcon size={18} />
+                    <InstagramIcon size={16} />
                   </a>
 
                   <a
@@ -611,9 +597,9 @@ export function StudentFooter() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Discord"
-                    className="p-2.5 rounded-lg border border-border bg-surface-elevated text-text-secondary hover:text-[#5865F2] hover:border-[#5865F2]/40 hover:bg-[#5865F2]/5 hover:-translate-y-0.5 transition-all duration-200"
+                    className="p-2 sm:p-2.5 rounded-lg border border-border bg-surface-elevated text-text-secondary hover:text-[#5865F2] hover:border-[#5865F2]/40 hover:bg-[#5865F2]/5 hover:-translate-y-0.5 transition-all duration-200"
                   >
-                    <DiscordIcon size={18} />
+                    <DiscordIcon size={16} />
                   </a>
 
                   <a
@@ -621,9 +607,9 @@ export function StudentFooter() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="LinkedIn"
-                    className="p-2.5 rounded-lg border border-border bg-surface-elevated text-text-secondary hover:text-[#0A66C2] hover:border-[#0A66C2]/40 hover:bg-[#0A66C2]/5 hover:-translate-y-0.5 transition-all duration-200"
+                    className="p-2 sm:p-2.5 rounded-lg border border-border bg-surface-elevated text-text-secondary hover:text-[#0A66C2] hover:border-[#0A66C2]/40 hover:bg-[#0A66C2]/5 hover:-translate-y-0.5 transition-all duration-200"
                   >
-                    <LinkedinIcon size={18} />
+                    <LinkedinIcon size={16} />
                   </a>
 
                   <a
@@ -631,9 +617,9 @@ export function StudentFooter() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="GitHub"
-                    className="p-2.5 rounded-lg border border-border bg-surface-elevated text-text-secondary hover:text-white hover:border-white/40 hover:bg-white/5 hover:-translate-y-0.5 transition-all duration-200"
+                    className="p-2 sm:p-2.5 rounded-lg border border-border bg-surface-elevated text-text-secondary hover:text-white hover:border-white/40 hover:bg-white/5 hover:-translate-y-0.5 transition-all duration-200"
                   >
-                    <GithubIcon size={18} />
+                    <GithubIcon size={16} />
                   </a>
                 </div>
               </div>
